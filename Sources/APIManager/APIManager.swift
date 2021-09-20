@@ -18,8 +18,8 @@ public class APIManager: NSObject {
         manager = AFAPIManager()
     }
     
-    public init(domains : [String]) {
-        manager = AFAPIManager(SSLPinningDomains: domains)
+    public init(SSLDomains : [String]) {
+        manager = AFAPIManager(SSLPinningDomains: SSLDomains)
     }
     
     /// This method is used for making request to endpoint with provided configurations.
