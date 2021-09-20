@@ -11,16 +11,26 @@ import Alamofire
 //MARK: AFAPIManager Class
 class AFAPIManager: APIManagerProtocol {
     
-    fileprivate let sessionManager = AF.session
+    fileprivate var sessionManager : Session!// AF.session
     
     var encoding : ParameterEncoding
     
     init() {
         encoding = JSONEncoding.default
+        CreateSessionWithSSLPinning()
     }
     
     init(encoding : ParameterEncoding) {
         self.encoding = encoding
+        CreateSessionWithSSLPinning()
+    }
+    
+    fileprivate func CreateSessionWithSSLPinning(){
+        let evaluators: [String: ServerTrustEvaluating] = [
+            "www.google.com": PublicKeysTrustEvaluator()
+        ]
+        let serverTrustManager = ServerTrustManager(evaluators: evaluators)
+        sessionManager = Session(serverTrustManager: serverTrustManager)
     }
     
     func request(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requesttimeout: TimeInterval = 90, param: [String : Any]?, completion: @escaping (Result<Data, Error>) -> Void) {
@@ -31,7 +41,7 @@ class AFAPIManager: APIManagerProtocol {
             headers.add(HTTPHeader(name: headerValue.key, value: headerValue.value))
         })
         
-        sessionManager.configuration.timeoutIntervalForRequest = requesttimeout
+        sessionManager.session.configuration.timeoutIntervalForRequest = requesttimeout
         
         Debug.Log("\n\n===========Request===========")
         Debug.Log("Url: " + url)
@@ -40,7 +50,7 @@ class AFAPIManager: APIManagerProtocol {
         Debug.Log("Parameter: \(param ?? [:])")
         Debug.Log("=============================\n")
         
-        AF.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
             
             Debug.Log("\n\n===========Response===========")
             Debug.Log("Url: " + url)
