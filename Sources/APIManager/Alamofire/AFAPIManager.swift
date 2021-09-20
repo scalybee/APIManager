@@ -27,7 +27,7 @@ class AFAPIManager: APIManagerProtocol {
     
     fileprivate func CreateSessionWithSSLPinning(){
         let evaluators: [String: ServerTrustEvaluating] = [
-            "keys.example.com": PublicKeysTrustEvaluator()
+            "reqres.in": PublicKeysTrustEvaluator()
         ]
         let serverTrustManager = ServerTrustManager(evaluators: evaluators)
         sessionManager = Session(serverTrustManager: serverTrustManager)
