@@ -11,14 +11,14 @@ import Foundation
 //MARK: APIManager Class
 public class APIManager: NSObject {
     
-    private var manager: APIManagerProtocol!
+    var manager: APIManagerProtocol!
     
     public override init() {
         super.init()
         manager = AFAPIManager()
     }
     
-    init(domains : [String]) {
+    public init(domains : [String]) {
         manager = AFAPIManager(SSLPinningDomains: domains)
     }
     
