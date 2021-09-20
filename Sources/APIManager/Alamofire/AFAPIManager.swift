@@ -15,20 +15,19 @@ class AFAPIManager: APIManagerProtocol {
     
     var encoding : ParameterEncoding
     
-    init() {
-        encoding = JSONEncoding.default
-        CreateSessionWithSSLPinning()
-    }
+    var SSLPinningDomains = [String]()
     
-    init(encoding : ParameterEncoding) {
+    init(encoding : ParameterEncoding = JSONEncoding.default, SSLPinningDomains : [String] = [String]()) {
         self.encoding = encoding
+        self.SSLPinningDomains = SSLPinningDomains
         CreateSessionWithSSLPinning()
     }
     
     fileprivate func CreateSessionWithSSLPinning(){
-        let evaluators: [String: ServerTrustEvaluating] = [
-            "reqres.in": PublicKeysTrustEvaluator()
-        ]
+        var evaluators = [String: ServerTrustEvaluating]()
+        SSLPinningDomains.forEach({ str in
+            evaluators[str] = PublicKeysTrustEvaluator()
+        })
         let serverTrustManager = ServerTrustManager(evaluators: evaluators)
         sessionManager = Session(serverTrustManager: serverTrustManager)
     }

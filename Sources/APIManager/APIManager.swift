@@ -11,7 +11,16 @@ import Foundation
 //MARK: APIManager Class
 public class APIManager: NSObject {
     
-    private var manager: APIManagerProtocol = AFAPIManager()
+    private var manager: APIManagerProtocol!
+    
+    public override init() {
+        super.init()
+        manager = AFAPIManager()
+    }
+    
+    init(domains : [String]) {
+        manager = AFAPIManager(SSLPinningDomains: domains)
+    }
     
     /// This method is used for making request to endpoint with provided configurations.
     /// - Parameters:
