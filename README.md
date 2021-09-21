@@ -52,9 +52,13 @@ Step 2: Create Service File with Below Func
 
 
 func CallUserAPI(_ page : Int,completion: @escaping (Result<UsersModel,Error>) -> ()) {
+
     let endpoint = APIEndPoint.Users(page: page)
+    
     APIManager(sslPinningType: .PublicKey, isDebugOn: EnvironmentManager.isDebugOn).APIRequest(endpoint.relative, httpMethod: .GET, header: endpoint.header, completion: completion)
+    
 }
+
 
 
 
