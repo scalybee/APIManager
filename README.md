@@ -7,16 +7,11 @@ After Import this repo using SPM, follow below steps.
 Step 1: Create enum like below.
 
 ```swift
+//MARK: API Endpoints
 enum APIEndPoint {
-
+    
     case Users(page : Int)
-
-    /// Keys for Headers
-    enum WebHeaderKey :String {
-        case Content_Type = "Content-Type"
-        case Authorization = "Authorization"
-    }
-   
+    
     static let BaseURL = EnvironmentManager.rootURL
     
     var relative: String {
@@ -25,6 +20,16 @@ enum APIEndPoint {
             return "\(APIEndPoint.BaseURL)users?page=\(page)"
         }
     }
+
+}
+
+//MARK: API Header
+extension APIEndPoint{
+    
+    enum WebHeaderKey :String {
+        case Content_Type = "Content-Type"
+        case Authorization = "Authorization"
+    }
     
     var header : [String:String]? {
         switch self {
@@ -32,7 +37,6 @@ enum APIEndPoint {
             return [WebHeaderKey.Authorization.rawValue: "Bearer TOKEN", WebHeaderKey.Content_Type.rawValue:"application/json"]
         }
     }
-      
 }
 ```
 
