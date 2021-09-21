@@ -18,7 +18,7 @@ public class APIManager: NSObject {
     
     public init(sslPinningType : SSLPinningType = .Disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
-        manager = AFAPIManager(sslPinningType: sslPinningType)
+        manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
     }
     
     /// This method is used for making request to endpoint with provided configurations.
