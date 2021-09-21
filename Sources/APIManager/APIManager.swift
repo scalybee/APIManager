@@ -11,15 +11,13 @@ import Foundation
 //MARK: APIManager Class
 public class APIManager: NSObject {
     
+    var sslPinningType : SSLPinningType = .Disable
+    
     var manager: APIManagerProtocol!
     
-    public override init() {
-        super.init()
-        manager = AFAPIManager()
-    }
-    
-    public init(SSLDomains : [String]) {
-        manager = AFAPIManager(SSLPinningDomains: SSLDomains)
+    init(sslPinningType : SSLPinningType = .Disable) {
+        self.sslPinningType = sslPinningType
+        manager = AFAPIManager(sslPinningType: sslPinningType)
     }
     
     /// This method is used for making request to endpoint with provided configurations.

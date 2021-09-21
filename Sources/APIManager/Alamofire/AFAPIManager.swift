@@ -11,26 +11,56 @@ import Alamofire
 //MARK: AFAPIManager Class
 class AFAPIManager: APIManagerProtocol {
     
+    var encoding : ParameterEncoding = JSONEncoding.default
+    var sslPinningType : SSLPinningType = .Disable
+    
+    let rootURL = Bundle.main.infoDictionary?["ROOT_URL"] as? String
+    
     fileprivate var sessionManager : Session!// AF.session
     
-    var encoding : ParameterEncoding
-    
-    var SSLPinningDomains = [String]()
-    
-    init(encoding : ParameterEncoding = JSONEncoding.default, SSLPinningDomains : [String] = [String]()) {
+    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .Disable) {
         self.encoding = encoding
-        self.SSLPinningDomains = SSLPinningDomains
-        CreateSessionWithSSLPinning()
+        self.sslPinningType = sslPinningType
+        checkAndCreateSessionWithSSLPinning()
     }
     
-    fileprivate func CreateSessionWithSSLPinning(){
-        var evaluators = [String: ServerTrustEvaluating]()
-        SSLPinningDomains.forEach({ str in
-            evaluators[str] = PublicKeysTrustEvaluator()
-        })
-        let serverTrustManager = ServerTrustManager(evaluators: evaluators)
-        sessionManager = Session(serverTrustManager: serverTrustManager)
+}
+
+//MARK: SSL Pinning
+extension AFAPIManager {
+    
+    /// Get SSL Pinning Type according to provided type selection
+    fileprivate func GetTrustEvaluator(domain : String) -> [String: ServerTrustEvaluating]{
+        switch sslPinningType {
+        case .Certificate:
+            return [domain: PinnedCertificatesTrustEvaluator()]
+        case .PublicKey:
+            return [domain: PublicKeysTrustEvaluator()]
+        case .Disable:
+            return [domain: DisabledTrustEvaluator()]
+        }
     }
+    
+    /// Create AF Session according to selected configurations
+    fileprivate func checkAndCreateSessionWithSSLPinning(){
+        
+        guard let rooturl = rootURL, sslPinningType != .Disable else {
+            sessionManager = Alamofire.Session()
+            return
+        }
+        
+        let evaluators : [String: ServerTrustEvaluating] = GetTrustEvaluator(domain: rooturl)
+        
+        let serverTrustManager = ServerTrustManager(evaluators: evaluators)
+        
+        sessionManager = Session(serverTrustManager: serverTrustManager)
+        
+    }
+}
+
+
+//MARK: API Request and Response Parsing
+extension AFAPIManager{
     
     func request(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requesttimeout: TimeInterval = 90, param: [String : Any]?, completion: @escaping (Result<Data, Error>) -> Void) {
         
@@ -85,5 +115,4 @@ class AFAPIManager: APIManagerProtocol {
             completion(.failure(error))
         }
     }
-    
 }
