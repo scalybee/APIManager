@@ -15,7 +15,7 @@ public class APIManager: NSObject {
     
     var manager: APIManagerProtocol!
     
-    init(sslPinningType : SSLPinningType = .Disable) {
+    public init(sslPinningType : SSLPinningType = .Disable) {
         self.sslPinningType = sslPinningType
         manager = AFAPIManager(sslPinningType: sslPinningType)
     }
