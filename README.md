@@ -42,22 +42,19 @@ func CallUserAPI(_ page : Int,completion: @escaping (Result<UsersModel,Error>) -
 }
 
 
-Step 3: In ViewModel call this service file func
+Step 3: In ViewModel call this service file func, **Use weak self to avoid retainng memory.**
 func CallAPI(){
-    UsersAPI().CallUserAPI(page) { [weak self] result in
-        DispatchQueue.main.async {
-        
+    UsersAPI().CallUserAPI(page) { result in
             switch result{
         
             case .success(let value):
-                self?.ParseUsersAPI(value)
+                self.ParseUsersAPI(value)
             
             case .failure(let error):
             break
             
             }
-        }
-    }
+      }
 }
 
 NOTE : sslPinningType currently supports only certificate and public key pinning, isDebugOn flag is used for dumping api request and response its default value is false
