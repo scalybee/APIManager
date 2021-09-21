@@ -9,6 +9,8 @@ Step 1: Create enum like below.
 ```swift
 enum APIEndPoint {
 
+    case Users(page : Int)
+
     /// Keys for Headers
     enum WebHeaderKey :String {
         case Content_Type = "Content-Type"
@@ -16,8 +18,6 @@ enum APIEndPoint {
     }
    
     static let BaseURL = EnvironmentManager.rootURL
-    
-    case Users(page : Int)
     
     var relative: String {
         switch self {
