@@ -31,6 +31,12 @@ class AFAPIManager: APIManagerProtocol {
 //MARK: SSL Pinning
 extension AFAPIManager {
     
+    fileprivate func GetDomainFrom(_ url: String) -> String?{
+        let baseurl = url.replacingOccurrences(of: "http://", with: "").replacingOccurrences(of: "https://", with: "")
+        let cmp = baseurl.components(separatedBy: "/")
+        return cmp.first
+    }
+    
     /// Get SSL Pinning Type according to provided type selection
     fileprivate func GetTrustEvaluator(domain : String) -> [String: ServerTrustEvaluating]{
         switch sslPinningType {
@@ -46,12 +52,12 @@ extension AFAPIManager {
     /// Create AF Session according to selected configurations
     fileprivate func checkAndCreateSessionWithSSLPinning(){
         
-        guard let rooturl = rootURL, sslPinningType != .Disable else {
+        guard let rooturl = rootURL, sslPinningType != .Disable, let domain = GetDomainFrom(rooturl) else {
             sessionManager = Alamofire.Session()
             return
         }
-        
-        let evaluators : [String: ServerTrustEvaluating] = GetTrustEvaluator(domain: rooturl)
+       
+        let evaluators : [String: ServerTrustEvaluating] = GetTrustEvaluator(domain: domain)
         
         let serverTrustManager = ServerTrustManager(evaluators: evaluators)
         
