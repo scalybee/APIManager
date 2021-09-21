@@ -12,7 +12,7 @@ import Foundation
 public class APIManager: NSObject {
     
     var sslPinningType : SSLPinningType = .Disable
-    var isDebugOn : Bool = false
+    var isDebugOn : Bool!
     
     var manager: APIManagerProtocol!
     

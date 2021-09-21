@@ -13,7 +13,7 @@ class AFAPIManager: APIManagerProtocol {
     
     var encoding : ParameterEncoding = JSONEncoding.default
     var sslPinningType : SSLPinningType = .Disable
-    var isDebugOn: Bool = false
+    var isDebugOn: Bool!
     
     let rootURL = Bundle.main.infoDictionary?["ROOT_URL"] as? String
     

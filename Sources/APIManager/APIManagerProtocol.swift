@@ -15,7 +15,7 @@ public enum APIHTTPMethod: String
     case PUT    = "PUT"
 }
 
-public protocol APIManagerProtocol {
+internal protocol APIManagerProtocol {
     /// This func it used for making api request to server.
     /// - Parameters:
     ///   - url: API URL to which request is being made.

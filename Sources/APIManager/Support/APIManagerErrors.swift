@@ -17,7 +17,7 @@ public enum APIManagerErrors: Error {
     case InternetOffline
     
     //MARK: All Custom Error Messages
-    public enum ErrorMessages: String {
+    private enum ErrorMessages: String {
         case FileUploadFailed = "Their was issue in connecting to server, please try again after some time."
         case InvalidResponseFromServer = "Server response is invalid"
         case Unauthorized = "You do not have permission to use app, please login again."
