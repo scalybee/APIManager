@@ -12,10 +12,11 @@ import Foundation
 public class APIManager: NSObject {
     
     var sslPinningType : SSLPinningType = .Disable
+    var isDebugOn : Bool = false
     
     var manager: APIManagerProtocol!
     
-    public init(sslPinningType : SSLPinningType = .Disable) {
+    public init(sslPinningType : SSLPinningType = .Disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
         manager = AFAPIManager(sslPinningType: sslPinningType)
     }

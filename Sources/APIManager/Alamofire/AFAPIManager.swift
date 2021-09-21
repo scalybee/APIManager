@@ -13,14 +13,16 @@ class AFAPIManager: APIManagerProtocol {
     
     var encoding : ParameterEncoding = JSONEncoding.default
     var sslPinningType : SSLPinningType = .Disable
+    var isDebugOn: Bool = false
     
     let rootURL = Bundle.main.infoDictionary?["ROOT_URL"] as? String
     
     fileprivate var sessionManager : Session!// AF.session
     
-    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .Disable) {
+    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .Disable, isDebugOn : Bool = false) {
         self.encoding = encoding
         self.sslPinningType = sslPinningType
+        self.isDebugOn = isDebugOn
         checkAndCreateSessionWithSSLPinning()
     }
     
@@ -72,22 +74,27 @@ extension AFAPIManager{
         
         sessionManager.session.configuration.timeoutIntervalForRequest = requesttimeout
         
-        Debug.Log("\n\n===========Request===========")
-        Debug.Log("Url: " + url)
-        Debug.Log("Method: " + httpMethod.rawValue)
-        Debug.Log("Header: \(header ?? [:])")
-        Debug.Log("Parameter: \(param ?? [:])")
-        Debug.Log("=============================\n")
-        
-        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
-            
-            Debug.Log("\n\n===========Response===========")
+        if isDebugOn {
+            Debug.Log("\n\n===========Request===========")
             Debug.Log("Url: " + url)
             Debug.Log("Method: " + httpMethod.rawValue)
             Debug.Log("Header: \(header ?? [:])")
             Debug.Log("Parameter: \(param ?? [:])")
-            Debug.Log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
             Debug.Log("=============================\n")
+        }
+        
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
+            
+            if self.isDebugOn == true{
+                Debug.Log("\n\n===========Response===========")
+                Debug.Log("Url: " + url)
+                Debug.Log("Method: " + httpMethod.rawValue)
+                Debug.Log("Header: \(header ?? [:])")
+                Debug.Log("Parameter: \(param ?? [:])")
+                Debug.Log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
+                Debug.Log("=============================\n")
+            }
+            
             if let error = res.error {
                 completion(.failure(error))
             }
