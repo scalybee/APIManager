@@ -67,4 +67,4 @@ UsersAPI().CallUserAPI(page) { result in
 
 NOTE :
 1. isDebugOn flag is used for dumping api request and response, its default value is false.
-2. if you wish to use SSL Pinning you must provide **ROOT_URL** inside info.plist, currently we only supports SSL pinning by certificate and public key.
+2. if you wish to use SSL Pinning you must provide **ROOT_URL** inside info.plist and ssl certificate, currently we only supports SSL pinning by certificate and public key.
