@@ -88,8 +88,10 @@ extension AFAPIManager{
             Debug.Log("Parameter: \(param ?? [:])")
             Debug.Log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
             Debug.Log("=============================\n")
-            
-            if (200..<300) ~= ((res.response?.statusCode) ?? 0) {
+            if let error = res.error {
+                completion(.failure(error))
+            }
+            else if (200..<300) ~= ((res.response?.statusCode) ?? 0) {
                 self.ParseResponse(res, completion: completion)
             } else if res.response?.statusCode == 401 {
                 completion(.failure(APIManagerErrors.Unauthorized))
