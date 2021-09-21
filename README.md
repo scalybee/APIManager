@@ -31,7 +31,6 @@ enum APIEndPoint {
         case .Users(_):
             return [WebHeaderKey.Authorization.rawValue: "Bearer TOKEN", WebHeaderKey.Content_Type.rawValue:"application/json"]
         }
-//        return nil
     }
     
 }
