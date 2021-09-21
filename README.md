@@ -6,6 +6,9 @@ After Import this repo using SPM, follow below steps.
 
 Step 1: Create enum like below.
 
+
+
+
 enum APIEndPoint {
     
     /// Keys for Headers
@@ -34,7 +37,15 @@ enum APIEndPoint {
     
 }
 
+
+
+
+
 Step 2: Create Service File with Below Func
+
+
+
+
 
 func CallUserAPI(_ page : Int,completion: @escaping (Result<UsersModel,Error>) -> ()) {
     let endpoint = APIEndPoint.Users(page: page)
@@ -42,7 +53,12 @@ func CallUserAPI(_ page : Int,completion: @escaping (Result<UsersModel,Error>) -
 }
 
 
+
+
 Step 3: In ViewModel call this service file func, **Use weak self to avoid retainng memory.**
+
+
+
 func CallAPI(){
     UsersAPI().CallUserAPI(page) { result in
             switch result{
@@ -56,5 +72,8 @@ func CallAPI(){
             }
       }
 }
+
+
+
 
 NOTE : sslPinningType currently supports only certificate and public key pinning, isDebugOn flag is used for dumping api request and response its default value is false
