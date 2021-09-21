@@ -10,11 +10,15 @@ Step 1: Create enum like below.
 
 
 enum APIEndPoint {
+
+
     /// Keys for Headers
     enum WebHeaderKey :String {
         case Content_Type = "Content-Type"
         case Authorization = "Authorization"
     }
+    
+    
     
     static let BaseURL = EnvironmentManager.rootURL
     
@@ -33,6 +37,8 @@ enum APIEndPoint {
             return [WebHeaderKey.Authorization.rawValue: "Bearer TOKEN", WebHeaderKey.Content_Type.rawValue:"application/json"]
         }
     }
+    
+    
 }
 
 
