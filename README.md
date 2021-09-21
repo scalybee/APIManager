@@ -59,7 +59,7 @@ Step 3: In ViewModel call this service file func, **Use weak self to avoid retai
 
 
 
-func CallAPI(){
+
     UsersAPI().CallUserAPI(page) { result in
             switch result{
         
@@ -71,7 +71,6 @@ func CallAPI(){
             
             }
       }
-}
 
 
 
