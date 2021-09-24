@@ -67,5 +67,5 @@ UsersAPI().CallUserAPI(page) { result in
 
 
 NOTE : 
-1. sslPinningType currently supports only certificate and public key pinning, if you are using certificate pinning then remember to submit new app with new ssl certificate when certificate expiries, if you are using public key pinning then make sure public key are same, else you will need to submit new app.
-2. isDebugOn flag is used for dumping api request and response its default value is false
+1. if you wish to use SSL Pinning you must provide **ROOT_URL** inside info.plist and ssl certificate, sslPinningType currently supports only certificate and public key pinning, if you are using certificate pinning then remember to submit new app with new ssl certificate when certificate expiries, if you are using public key pinning then make sure public key are same, else you will need to submit new app.
+2. isDebugOn flag is used for dumping api request and response, its default value is false
