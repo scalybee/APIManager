@@ -2,7 +2,7 @@
 
 This Package contains easy to use AF wrapper with SSL Pinning Support.
 
-After Import this repo using SPM, follow below steps.
+After Import this repo using Swift Package Manager using this Link : https://github.com/pinalaecor/APIManager.git , follow below steps.
 
 Step 1: Create enum like below.
 
