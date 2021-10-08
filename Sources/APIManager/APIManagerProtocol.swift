@@ -21,8 +21,8 @@ internal protocol APIManagerProtocol {
     ///   - url: API URL to which request is being made.
     ///   - httpMethod: type of request e.g. get, post etc.
     ///   - header: Headers
-    ///   - requesttimeout: Request timeout
+    ///   - requestTimeout: Request timeout
     ///   - param: parameters to be sent to server
     ///   - completion: Response of server in either JSON data or error format
-    func request(url: String, httpMethod: APIHTTPMethod ,header: [String:String]?, requesttimeout : TimeInterval, param: [String:Any]?, completion: @escaping (Result<Data,Error>)-> Void)
+    func request(url: String, httpMethod: APIHTTPMethod ,header: [String:String]?, requestTimeout : TimeInterval, param: [String:Any]?, completion: @escaping (Result<Data,Error>)-> Void)
 }

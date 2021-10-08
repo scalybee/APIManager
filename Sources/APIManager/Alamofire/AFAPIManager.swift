@@ -12,14 +12,14 @@ import Alamofire
 class AFAPIManager: APIManagerProtocol {
     
     var encoding : ParameterEncoding = JSONEncoding.default
-    var sslPinningType : SSLPinningType = .Disable
+    var sslPinningType : SSLPinningType = .disable
     var isDebugOn: Bool!
     
     let rootURL = Bundle.main.infoDictionary?["ROOT_URL"] as? String
     
     fileprivate var sessionManager : Session!// AF.session
     
-    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .Disable, isDebugOn : Bool = false) {
+    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.encoding = encoding
         self.sslPinningType = sslPinningType
         self.isDebugOn = isDebugOn
@@ -31,20 +31,20 @@ class AFAPIManager: APIManagerProtocol {
 //MARK: SSL Pinning
 extension AFAPIManager {
     
-    fileprivate func GetDomainFrom(_ url: String) -> String?{
+    fileprivate func getDomainFrom(_ url: String) -> String?{
         let baseurl = url.replacingOccurrences(of: "http://", with: "").replacingOccurrences(of: "https://", with: "")
         let cmp = baseurl.components(separatedBy: "/")
         return cmp.first
     }
     
     /// Get SSL Pinning Type according to provided type selection
-    fileprivate func GetTrustEvaluator(domain : String) -> [String: ServerTrustEvaluating]{
+    fileprivate func getTrustEvaluator(domain : String) -> [String: ServerTrustEvaluating]{
         switch sslPinningType {
-        case .Certificate:
+        case .certificate:
             return [domain: PinnedCertificatesTrustEvaluator()]
-        case .PublicKey:
+        case .publicKey:
             return [domain: PublicKeysTrustEvaluator()]
-        case .Disable:
+        case .disable:
             return [domain: DisabledTrustEvaluator()]
         }
     }
@@ -52,12 +52,12 @@ extension AFAPIManager {
     /// Create AF Session according to selected configurations
     fileprivate func checkAndCreateSessionWithSSLPinning(){
         
-        guard let rooturl = rootURL, sslPinningType != .Disable, let domain = GetDomainFrom(rooturl) else {
+        guard let rooturl = rootURL, sslPinningType != .disable, let domain = getDomainFrom(rooturl) else {
             sessionManager = Alamofire.Session()
             return
         }
        
-        let evaluators : [String: ServerTrustEvaluating] = GetTrustEvaluator(domain: domain)
+        let evaluators : [String: ServerTrustEvaluating] = getTrustEvaluator(domain: domain)
         
         let serverTrustManager = ServerTrustManager(evaluators: evaluators)
         
@@ -70,7 +70,7 @@ extension AFAPIManager {
 //MARK: API Request and Response Parsing
 extension AFAPIManager{
     
-    func request(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requesttimeout: TimeInterval = 90, param: [String : Any]?, completion: @escaping (Result<Data, Error>) -> Void) {
+    func request(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval = 90, param: [String : Any]?, completion: @escaping (Result<Data, Error>) -> Void) {
         
         var headers = HTTPHeaders()
         
@@ -78,52 +78,52 @@ extension AFAPIManager{
             headers.add(HTTPHeader(name: headerValue.key, value: headerValue.value))
         })
         
-        sessionManager.session.configuration.timeoutIntervalForRequest = requesttimeout
+        sessionManager.session.configuration.timeoutIntervalForRequest = requestTimeout
         
         if isDebugOn {
-            Debug.Log("\n\n===========Request===========")
-            Debug.Log("Url: " + url)
-            Debug.Log("Method: " + httpMethod.rawValue)
-            Debug.Log("Header: \(header ?? [:])")
-            Debug.Log("Parameter: \(param ?? [:])")
-            Debug.Log("=============================\n")
+            Debug.log("\n\n===========Request===========")
+            Debug.log("Url: " + url)
+            Debug.log("Method: " + httpMethod.rawValue)
+            Debug.log("Header: \(header ?? [:])")
+            Debug.log("Parameter: \(param ?? [:])")
+            Debug.log("=============================\n")
         }
         
         sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
             
             if self.isDebugOn == true{
-                Debug.Log("\n\n===========Response===========")
-                Debug.Log("Url: " + url)
-                Debug.Log("Method: " + httpMethod.rawValue)
-                Debug.Log("Header: \(header ?? [:])")
-                Debug.Log("Parameter: \(param ?? [:])")
-                Debug.Log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
-                Debug.Log("=============================\n")
+                Debug.log("\n\n===========Response===========")
+                Debug.log("Url: " + url)
+                Debug.log("Method: " + httpMethod.rawValue)
+                Debug.log("Header: \(header ?? [:])")
+                Debug.log("Parameter: \(param ?? [:])")
+                Debug.log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
+                Debug.log("=============================\n")
             }
             
             if let error = res.error {
                 completion(.failure(error))
             }
             else if (200..<300) ~= ((res.response?.statusCode) ?? 0) {
-                self.ParseResponse(res, completion: completion)
+                self.parseResponse(res, completion: completion)
             } else if res.response?.statusCode == 401 {
-                completion(.failure(APIManagerErrors.Unauthorized))
+                completion(.failure(APIManagerErrors.unauthorized))
             } else {
-                completion(.failure(APIManagerErrors.InvalidResponseFromServer))
+                completion(.failure(APIManagerErrors.invalidResponseFromServer))
             }
             
         }
         
     }
     
-    func ParseResponse(_ response : AFDataResponse<Any>, completion: @escaping (Result<Data, Error>) -> Void) {
+    func parseResponse(_ response : AFDataResponse<Any>, completion: @escaping (Result<Data, Error>) -> Void) {
         switch response.result{
         case .success(let value):
             if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: []){
                 completion(.success(jsonData))
             }
             else{
-                completion(.failure(APIManagerErrors.InvalidResponseFromServer))
+                completion(.failure(APIManagerErrors.invalidResponseFromServer))
             }
             break
         case .failure(let error):

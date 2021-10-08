@@ -10,19 +10,19 @@ import Foundation
 //MARK: API Related Custom Errors
 public enum APIManagerErrors: Error {
     
-    case FileUploadFailed
-    case InvalidResponseFromServer
-    case Unauthorized
-    case JSONParsingFailure
-    case InternetOffline
+    case fileUploadFailed
+    case invalidResponseFromServer
+    case unauthorized
+    case jsonParsingFailure
+    case internetOffline
     
     //MARK: All Custom Error Messages
     private enum ErrorMessages: String {
-        case FileUploadFailed = "Their was issue in connecting to server, please try again after some time."
-        case InvalidResponseFromServer = "Server response is invalid"
-        case Unauthorized = "You do not have permission to use app, please login again."
-        case JSONParsingFailure = "Please try again, their was in parsing response. if issue persist contact admin."
-        case InternetOffline = "Internet connection appears to be offline."
+        case fileUploadFailed = "Their was issue in connecting to server, please try again after some time."
+        case invalidResponseFromServer = "Server response is invalid"
+        case unauthorized = "You do not have permission to use app, please login again."
+        case jsonParsingFailure = "Please try again, their was in parsing response. if issue persist contact admin."
+        case internetOffline = "Internet connection appears to be offline."
     }
     
 }
@@ -31,16 +31,16 @@ public enum APIManagerErrors: Error {
 extension APIManagerErrors: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .FileUploadFailed:
-            return NSLocalizedString(ErrorMessages.FileUploadFailed.rawValue, comment: "")
-        case .InvalidResponseFromServer:
-            return NSLocalizedString(ErrorMessages.InvalidResponseFromServer.rawValue, comment: "")
-        case .Unauthorized:
-            return NSLocalizedString(ErrorMessages.Unauthorized.rawValue, comment: "")
-        case .JSONParsingFailure:
-            return NSLocalizedString(ErrorMessages.JSONParsingFailure.rawValue, comment: "")
-        case .InternetOffline:
-            return NSLocalizedString(ErrorMessages.InternetOffline.rawValue, comment: "")
+        case .fileUploadFailed:
+            return NSLocalizedString(ErrorMessages.fileUploadFailed.rawValue, comment: "")
+        case .invalidResponseFromServer:
+            return NSLocalizedString(ErrorMessages.invalidResponseFromServer.rawValue, comment: "")
+        case .unauthorized:
+            return NSLocalizedString(ErrorMessages.unauthorized.rawValue, comment: "")
+        case .jsonParsingFailure:
+            return NSLocalizedString(ErrorMessages.jsonParsingFailure.rawValue, comment: "")
+        case .internetOffline:
+            return NSLocalizedString(ErrorMessages.internetOffline.rawValue, comment: "")
         }
     }
 }

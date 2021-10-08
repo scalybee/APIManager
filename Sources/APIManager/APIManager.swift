@@ -11,12 +11,12 @@ import Foundation
 //MARK: APIManager Class
 public class APIManager: NSObject {
     
-    var sslPinningType : SSLPinningType = .Disable
+    var sslPinningType : SSLPinningType = .disable
     var isDebugOn : Bool!
     
     var manager: APIManagerProtocol!
     
-    public init(sslPinningType : SSLPinningType = .Disable, isDebugOn : Bool = false) {
+    public init(sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
         manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
     }
@@ -29,26 +29,26 @@ public class APIManager: NSObject {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func APIRequest<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requesttimeout: TimeInterval = 90, completion : @escaping (Result<T, Error>) -> Void){
+    public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 90, completion : @escaping (Result<T, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork() == true else {
-            completion(.failure(APIManagerErrors.InternetOffline))
+            completion(.failure(APIManagerErrors.internetOffline))
             return
         }
         
-        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requesttimeout: requesttimeout, param: param) { result in
+        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { result in
             switch result{
             case .success(let jsondata):
                 if let users = try? JSONDecoder().decode(T.self, from: jsondata){
                     completion(.success(users))
                 }
                 else{
-                    completion(.failure(APIManagerErrors.JSONParsingFailure))
+                    completion(.failure(APIManagerErrors.jsonParsingFailure))
                 }
                 break
             case .failure(let error):
                 if (error as NSError).code == URLError.Code.notConnectedToInternet.rawValue{
-                    completion(.failure(APIManagerErrors.InternetOffline))
+                    completion(.failure(APIManagerErrors.internetOffline))
                 }
                 else{
                     completion(.failure(error))

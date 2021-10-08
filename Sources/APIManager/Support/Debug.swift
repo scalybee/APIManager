@@ -8,12 +8,13 @@
 import Foundation
 
 public struct Debug{
-    
-    public static func Log(_ msg :String){
+    ///Writes the textual representations of the given items into the standard output.
+    public static func log(_ msg :String){
         print(msg)
     }
     
-    public static func DebugPrint(_ error : Any){
+    ///Writes the textual representations of the given items most suitable for debugging into the standard output.
+    public static func debugLog(_ error : Any){
         debugPrint(error)
     }
 }

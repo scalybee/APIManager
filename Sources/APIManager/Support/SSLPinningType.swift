@@ -8,7 +8,7 @@
 import Foundation
 
 public enum SSLPinningType {
-    case Disable
-    case Certificate
-    case PublicKey
+    case disable
+    case certificate
+    case publicKey
 }
