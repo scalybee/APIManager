@@ -25,6 +25,21 @@ public enum APIManagerErrors: Error {
         case internetOffline = "Internet connection appears to be offline."
     }
     
+    var statusCode: Int{
+        switch self{
+        case .fileUploadFailed:
+            return 409
+        case .invalidResponseFromServer:
+            return 500
+        case .unauthorized:
+            return 401
+        case .jsonParsingFailure:
+            return 422
+        case .internetOffline:
+            return URLError.notConnectedToInternet.rawValue
+        }
+    }
+    
 }
 
 //MARK: API Related Custom Error Messages

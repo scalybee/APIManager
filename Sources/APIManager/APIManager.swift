@@ -29,32 +29,34 @@ public class APIManager: NSObject {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 90, completion : @escaping (Result<T, Error>) -> Void){
+    public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 90, completion : @escaping (Int,Result<T, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork() == true else {
-            completion(.failure(APIManagerErrors.internetOffline))
+            completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
             return
         }
         
-        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { result in
+        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { statuscode,result in
             switch result{
+                
             case .success(let jsondata):
-                if let users = try? JSONDecoder().decode(T.self, from: jsondata){
-                    completion(.success(users))
+                if let users = try? JSONDecoder().decode(T.self, from: jsondata) {
+                    completion(statuscode, .success(users))
                 }
-                else{
-                    completion(.failure(APIManagerErrors.jsonParsingFailure))
+                else {
+                    completion(APIManagerErrors.jsonParsingFailure.statusCode, .failure(APIManagerErrors.jsonParsingFailure))
                 }
-                break
+                
             case .failure(let error):
-                if (error as NSError).code == URLError.Code.notConnectedToInternet.rawValue{
-                    completion(.failure(APIManagerErrors.internetOffline))
+                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
+                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
                 }
                 else{
-                    completion(.failure(error))
+                    completion(statuscode,.failure(error))
                 }
-                break
+                
             }
+            
         }
         
     }
