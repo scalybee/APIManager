@@ -136,7 +136,7 @@ extension AFAPIManager{
 
 //MARK: Cancel All Request
 extension AFAPIManager {
-    func cancelAllRequests(){
+    public func cancelAllRequests(){
         sessionManager.cancelAllRequests()
     }
 }
