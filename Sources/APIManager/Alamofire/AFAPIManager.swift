@@ -17,7 +17,7 @@ class AFAPIManager: APIManagerProtocol {
     
     let rootURL = Bundle.main.infoDictionary?["ROOT_URL"] as? String
     
-    fileprivate var sessionManager : Session!// AF.session
+    var sessionManager : Session!// AF.session
     
     init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.encoding = encoding
@@ -131,5 +131,12 @@ extension AFAPIManager{
         case .failure(let error):
             completion(statuscode, .failure(error))
         }
+    }
+}
+
+//MARK: Cancel All Request
+extension AFAPIManager {
+    func cancelAllRequests(){
+        sessionManager.cancelAllRequests()
     }
 }

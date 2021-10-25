@@ -61,4 +61,8 @@ public class APIManager: NSObject {
         
     }
     
+    func cancelAllRequests(){
+        manager.cancelAllRequests()
+    }
+    
 }
