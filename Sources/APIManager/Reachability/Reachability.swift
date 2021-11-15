@@ -12,21 +12,20 @@ import Network
 struct Reachability {
     
     private static let monitor = NWPathMonitor()
-    static var isConnected: Bool = false
     
-    static func isConnectedToNetwork() -> Bool {
+    static func isConnectedToNetwork(completion:@escaping(Bool)->Void) {
         
-        guard monitor.pathUpdateHandler == nil else { return false}
-        let holdOn = DispatchGroup()
-        holdOn.enter()
-        monitor.pathUpdateHandler = { update in
-            isConnected = update.status == .satisfied ? true : false
-            holdOn.leave()
+        guard monitor.pathUpdateHandler == nil else {
+            completion(false)
+            return
         }
-        monitor.start(queue: DispatchQueue(label: "InternetMonitor"))
-        holdOn.wait()
-        return isConnected
+
+        monitor.pathUpdateHandler = { update in
+            let isConnected = update.status == .satisfied ? true : false
+            completion(isConnected)
+        }
         
+        monitor.start(queue: DispatchQueue(label: "InternetMonitor"))
         
     }
     
