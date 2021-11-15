@@ -17,7 +17,10 @@ struct Reachability {
     /// Monitors internet connectivity changes. Updates with every change in connectivity.
     /// Updates variables for availability and if it's expensive (cellular).
     static func startMonitoring() {
-        guard monitor.pathUpdateHandler == nil else { return }
+        guard monitor.pathUpdateHandler == nil else {
+            isConnectedToNetwork = false
+            return
+        }
         
         monitor.pathUpdateHandler = { update in
             Reachability.isConnectedToNetwork = update.status == .satisfied ? true : false
