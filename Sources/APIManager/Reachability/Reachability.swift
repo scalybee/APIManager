@@ -6,27 +6,24 @@
 //
 
 import Foundation
-import SystemConfiguration
 import Network
 
 struct Reachability {
     
     private static let monitor = NWPathMonitor()
     
-    static func isConnectedToNetwork(completion:@escaping(Bool)->Void) {
+    static var isConnectedToNetwork = false
+    
+    /// Monitors internet connectivity changes. Updates with every change in connectivity.
+    /// Updates variables for availability and if it's expensive (cellular).
+    static func start() {
+        guard monitor.pathUpdateHandler == nil else { return }
         
-        guard monitor.pathUpdateHandler == nil else {
-            completion(false)
-            return
-        }
-
         monitor.pathUpdateHandler = { update in
-            let isConnected = update.status == .satisfied ? true : false
-            completion(isConnected)
+            Reachability.isConnectedToNetwork = update.status == .satisfied ? true : false
         }
         
         monitor.start(queue: DispatchQueue(label: "InternetMonitor"))
-        
     }
     
 }
