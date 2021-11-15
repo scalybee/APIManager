@@ -18,8 +18,12 @@ public class APIManager: NSObject {
     
     public init(sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
-        Reachability.start()
+        Reachability.startMonitoring()
         manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
+    }
+    
+    deinit{
+        Reachability.stopMonitoring()
     }
     
     /// This method is used for making request to endpoint with provided configurations.
