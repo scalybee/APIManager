@@ -7,7 +7,7 @@ let package = Package(
     name: "APIManager",
     platforms: [
         .macOS(.v10_14),
-        .iOS(.v10),
+        .iOS(.v12),
         .tvOS(.v10),
         .watchOS(.v3)
     ],
