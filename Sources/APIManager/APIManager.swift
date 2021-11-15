@@ -34,7 +34,7 @@ public class APIManager: NSObject {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 90, completion : @escaping (Int,Result<T, Error>) -> Void){
+    public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork == true else {
             completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
