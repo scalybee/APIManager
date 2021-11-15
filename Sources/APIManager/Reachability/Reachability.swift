@@ -6,31 +6,35 @@
 //
 
 import Foundation
-import Network
+import SystemConfiguration
 
-struct Reachability {
+public class Reachability {
+   
+    private init() { }
     
-    private static let monitor = NWPathMonitor()
-    
-    static var isConnectedToNetwork = false
-    
-    /// Monitors internet connectivity changes. Updates with every change in connectivity.
-    /// Updates variables for availability and if it's expensive (cellular).
-    static func startMonitoring() {
-        guard monitor.pathUpdateHandler == nil else {
-            isConnectedToNetwork = false
-            return
-        }
+    public static func isConnectedToNetwork() -> Bool {
         
-        monitor.pathUpdateHandler = { update in
-            Reachability.isConnectedToNetwork = update.status == .satisfied ? true : false
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+                
+            }
+            
+        }) else {
+            
+            return false
         }
-        
-        monitor.start(queue: DispatchQueue(label: "InternetMonitor"))
+        var flags = SCNetworkReachabilityFlags()
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return false
+        }
+        let isReachable = (flags.rawValue & UInt32(kSCNetworkFlagsReachable)) != 0
+        let needsConnection = (flags.rawValue & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+        return (isReachable && !needsConnection)
     }
-    
-    static func stopMonitoring() {
-        monitor.cancel()
-    }
-    
 }

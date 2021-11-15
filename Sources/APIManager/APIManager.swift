@@ -18,12 +18,7 @@ public class APIManager: NSObject {
     
     public init(sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
-        Reachability.startMonitoring()
         manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
-    }
-    
-    deinit{
-        Reachability.stopMonitoring()
     }
     
     /// This method is used for making request to endpoint with provided configurations.
@@ -36,7 +31,7 @@ public class APIManager: NSObject {
     ///   - completion: Response of API: containing codable or error
     public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
         
-        guard Reachability.isConnectedToNetwork == true else {
+        guard Reachability.isConnectedToNetwork() == true else {
             completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
             return
         }
