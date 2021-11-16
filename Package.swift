@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
     name: "APIManager",
     platforms: [
-        .macOS(.v10_12),
-        .iOS(.v10),
+        .macOS(.v10_14),
+        .iOS(.v12),
         .tvOS(.v10),
         .watchOS(.v3)
     ],
