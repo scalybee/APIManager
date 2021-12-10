@@ -22,7 +22,7 @@ public enum APIManagerErrors: Error {
         case invalidResponseFromServer = "Server response is invalid"
         case unauthorized = "You do not have permission to use app, please login again."
         case jsonParsingFailure = "Please try again, their was in parsing response. if issue persist contact admin."
-        case internetOffline = "Internet connection appears to be offline."
+        case internetOffline = "There is no internet connection in your phone.Please turn on your Wifi/Mobile data!"
     }
     
     var statusCode: Int{
