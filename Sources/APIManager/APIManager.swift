@@ -40,11 +40,12 @@ public class APIManager: NSObject {
             switch result{
                 
             case .success(let jsondata):
-                if let users = try? JSONDecoder().decode(T.self, from: jsondata) {
+                do {
+                    let users = try JSONDecoder().decode(T.self, from: jsondata)
                     completion(statuscode, .success(users))
                 }
-                else {
-                    completion(APIManagerErrors.jsonParsingFailure.statusCode, .failure(APIManagerErrors.jsonParsingFailure))
+                catch {
+                    completion(APIManagerErrors.jsonParsingFailure.statusCode, .failure(error))
                 }
                 
             case .failure(let error):
