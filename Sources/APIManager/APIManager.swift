@@ -32,7 +32,9 @@ public class APIManager: NSObject {
     public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork() == true else {
-            completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+                completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+            }
             return
         }
         
