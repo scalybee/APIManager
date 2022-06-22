@@ -15,6 +15,7 @@ public enum APIManagerErrors: Error {
     case unauthorized
     case jsonParsingFailure
     case internetOffline
+    case apiError(message: String, code: Int)
     
     //MARK: All Custom Error Messages
     private enum ErrorMessages: String {
@@ -37,6 +38,8 @@ public enum APIManagerErrors: Error {
             return 422
         case .internetOffline:
             return URLError.notConnectedToInternet.rawValue
+        case .apiError(_, let code):
+                    return code
         }
     }
     
@@ -56,6 +59,8 @@ extension APIManagerErrors: LocalizedError {
             return NSLocalizedString(ErrorMessages.jsonParsingFailure.rawValue, comment: "")
         case .internetOffline:
             return NSLocalizedString(ErrorMessages.internetOffline.rawValue, comment: "")
+        case .apiError(let message, _):
+                    return NSLocalizedString(message, comment: "")
         }
     }
 }
