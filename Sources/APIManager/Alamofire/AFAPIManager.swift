@@ -10,6 +10,7 @@ import Alamofire
 
 //MARK: AFAPIManager Class
 class AFAPIManager: APIManagerProtocol {
+    let statusCodeForCallBack: Int?
     
     var encoding : ParameterEncoding = JSONEncoding.default
     var sslPinningType : SSLPinningType = .disable
@@ -19,7 +20,8 @@ class AFAPIManager: APIManagerProtocol {
     
     var sessionManager : Session!// AF.session
     
-    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
+    init(statusCodeForCallBack: Int? = nil, encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
+        self.statusCodeForCallBack = statusCodeForCallBack
         self.encoding = encoding
         self.sslPinningType = sslPinningType
         self.isDebugOn = isDebugOn
@@ -107,7 +109,11 @@ extension AFAPIManager{
             }
             else if (200..<300) ~= ((res.response?.statusCode) ?? 0) {
                 self.parseResponse(res, completion: completion)
-            } else if res.response?.statusCode == APIManagerErrors.unauthorized.statusCode {
+            }
+            else if res.response?.statusCode == self.statusCodeForCallBack {
+                self.parseResponse(res, completion: completion)
+            }
+            else if res.response?.statusCode == APIManagerErrors.unauthorized.statusCode {
                 completion(APIManagerErrors.unauthorized.statusCode, .failure(APIManagerErrors.unauthorized))
             } else {
                 completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
