@@ -26,7 +26,7 @@ public enum APIManagerErrors: Error {
         case internetOffline = "There is no internet connection in your phone.Please turn on your Wifi/Mobile data!"
     }
     
-    var statusCode: Int{
+    public var statusCode: Int{
         switch self{
         case .fileUploadFailed:
             return 409
