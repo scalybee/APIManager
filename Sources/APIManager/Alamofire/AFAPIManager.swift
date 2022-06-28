@@ -93,7 +93,7 @@ extension AFAPIManager{
         
         sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
             
-            let statuscode = res.response?.statusCode ?? APIManagerErrors.unauthorized.statusCode
+            let statuscode = res.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
             if self.isDebugOn == true{
                 Debug.log("\n\n===========Response===========")
                 Debug.log("Url: " + url)
@@ -104,17 +104,17 @@ extension AFAPIManager{
                 Debug.log("=============================\n")
             }
             
-            if let error = res.error {
+            if res.response?.statusCode == self.statusCodeForCallBack {
+                self.parseResponse(res, completion: completion)
+            }
+            else if let error = res.error {
                 completion(statuscode, .failure(error))
             }
-            else if (200..<300) ~= ((res.response?.statusCode) ?? 0) {
+            else if (200..<300) ~= statuscode {
                 self.parseResponse(res, completion: completion)
             }
-            else if res.response?.statusCode == self.statusCodeForCallBack {
-                self.parseResponse(res, completion: completion)
-            }
-            else if res.response?.statusCode == APIManagerErrors.unauthorized.statusCode {
-                completion(APIManagerErrors.unauthorized.statusCode, .failure(APIManagerErrors.unauthorized))
+            else if res.response?.statusCode == APIManagerErrors.sessionExpired.statusCode {
+                completion(APIManagerErrors.sessionExpired.statusCode, .failure(APIManagerErrors.sessionExpired))
             } else {
                 completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
             }
@@ -124,7 +124,7 @@ extension AFAPIManager{
     }
     
     func parseResponse(_ response : AFDataResponse<Any>, completion: @escaping (Int,Result<Data, Error>) -> Void) {
-        let statuscode = response.response?.statusCode ?? APIManagerErrors.unauthorized.statusCode
+        let statuscode = response.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
         switch response.result{
         case .success(let value):
             if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: []) {
