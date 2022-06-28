@@ -91,7 +91,7 @@ extension AFAPIManager{
             Debug.log("=============================\n")
         }
         
-        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).validate(statusCode: 200..<300).responseJSON { res in
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).responseJSON { res in
             
             let statuscode = res.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
             if self.isDebugOn == true{
