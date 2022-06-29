@@ -117,9 +117,9 @@ extension AFAPIManager{
                 completion(APIManagerErrors.sessionExpired.statusCode, .failure(APIManagerErrors.sessionExpired))
             } else {
                 switch res.result {
-                case .success(let data):
+                case .success(_ ):
                     completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
-                case .failure(let error)
+                case .failure(let error):
                     completion(statuscode, .failure(error))
                 }
                 
