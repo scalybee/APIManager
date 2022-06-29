@@ -97,6 +97,7 @@ extension AFAPIManager{
             if self.isDebugOn == true{
                 Debug.log("\n\n===========Response===========")
                 Debug.log("Url: " + url)
+                Debug.log("StatusCode: \(res.response?.statusCode ?? 0)")
                 Debug.log("Method: " + httpMethod.rawValue)
                 Debug.log("Header: \(header ?? [:])")
                 Debug.log("Parameter: \(param ?? [:])")
