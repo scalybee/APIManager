@@ -108,7 +108,7 @@ extension AFAPIManager{
                 self.parseResponse(res, completion: completion)
             }
             else if let error = res.error {
-                completion(statuscode, .failure(error))
+                self.parseErrorResponse(res, error: error, completion: completion)
             }
             else if (200..<300) ~= statuscode {
                 self.parseResponse(res, completion: completion)
@@ -132,6 +132,22 @@ extension AFAPIManager{
             }
             else {
                 completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
+            }
+            break
+        case .failure(let error):
+            completion(statuscode, .failure(error))
+        }
+    }
+    
+    func parseErrorResponse(_ response : AFDataResponse<Any>, error: Error, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+        let statuscode = response.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
+        switch response.result{
+        case .success(let value):
+            if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: []) {
+                completion(statuscode,.success(jsonData))
+            }
+            else {
+                completion(statuscode, .failure(error))
             }
             break
         case .failure(let error):
