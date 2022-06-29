@@ -161,22 +161,12 @@ extension AFAPIManager{
                 Debug.log("=============================\n")
             }
             
-            if let error = res.error {
-                self.parseErrorResponse(res, error: error, completion: completion)
-            }
-            else if (200..<300) ~= statuscode {
-                self.parseResponse(res, completion: completion)
-            }
-            else if res.response?.statusCode == APIManagerErrors.sessionExpired.statusCode {
-                completion(APIManagerErrors.sessionExpired.statusCode, .failure(APIManagerErrors.sessionExpired))
-            } else {
-                switch res.result {
-                case .success(_ ):
-                    completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
-                case .failure(let error):
-                    completion(statuscode, .failure(error))
-                }
+            switch res.result{
+            case .success(let value):
+                completion(res.response?.statusCode ?? 200,.success(value))
                 
+            case .failure(let error):
+                completion(statuscode, .failure(error))
             }
             
         }
