@@ -116,7 +116,13 @@ extension AFAPIManager{
             else if res.response?.statusCode == APIManagerErrors.sessionExpired.statusCode {
                 completion(APIManagerErrors.sessionExpired.statusCode, .failure(APIManagerErrors.sessionExpired))
             } else {
-                completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
+                switch res.result {
+                case .success(let data):
+                    completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
+                case .failure(let error)
+                    completion(statuscode, .failure(error))
+                }
+                
             }
             
         }
