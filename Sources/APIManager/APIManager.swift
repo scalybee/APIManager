@@ -28,7 +28,7 @@ public class APIManager: NSObject {
     var isDebugOn : Bool!
     
     var manager: APIManagerProtocol!
-   
+    
     /// - Parameters:
     ///   - statusCodeForCallBack: this is api status code which will be used in case you want to break normal flow and get call back.
     ///   - statusMessageKey: using this key, manager will try to get string message from json and pass it to `statusCodeCallBack`.
@@ -43,6 +43,11 @@ public class APIManager: NSObject {
         manager = AFAPIManager(statusCodeForCallBack: statusCodeForCallBack, sslPinningType: sslPinningType, isDebugOn: isDebugOn)
     }
     
+}
+
+//MARK: request with codable support
+extension APIManager {
+    
     /// This method is used for making request to endpoint with provided configurations.
     /// - Parameters:
     ///   - endpoint: Web Service Name
@@ -51,7 +56,7 @@ public class APIManager: NSObject {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func request<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
+    public func requestDecodable<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -92,8 +97,56 @@ public class APIManager: NSObject {
         
     }
     
+}
+
+//MARK: request without codable support
+extension APIManager {
+    /// This method is used for making request to endpoint with provided configurations.
+    /// - Parameters:
+    ///   - endpoint: Web Service Name
+    ///   - httpMethod: Type of api request
+    ///   - header: Header to be sent to api
+    ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
+    ///   - requesttimeout: Request timeout
+    ///   - completion: Response of API: containing response data or error
+    public func requestData(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<Data, Error>) -> Void){
+        
+        guard Reachability.isConnectedToNetwork() == true else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+            }
+            return
+        }
+        
+        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
+            switch result{
+                
+            case .success(let jsondata):
+                if let statusCodeForCallBack = self?.statusCodeForCallBack,  statuscode == statusCodeForCallBack, let statusMessageKey = self?.statusMessageKey, self?.statusCodeCallBack != nil {
+                    let statusMessage = try? (JSONSerialization.jsonObject(with: jsondata, options: .mutableContainers) as? [String:Any])?[statusMessageKey] as? String
+                    self?.statusCodeCallBack?(statusMessage)
+                }
+                else{
+                    completion(statuscode, .success(jsondata))
+                }
+                
+            case .failure(let error):
+                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
+                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+                }
+                else{
+                    completion(statuscode,.failure(error))
+                }
+                
+            }
+            
+        }
+        
+    }
+}
+
+extension APIManager {
     public func cancelAllRequests(){
         manager.cancelAllRequests()
     }
-    
 }

@@ -58,7 +58,7 @@ extension AFAPIManager {
             sessionManager = Alamofire.Session()
             return
         }
-       
+        
         let evaluators : [String: ServerTrustEvaluating] = getTrustEvaluator(domain: domain)
         
         let serverTrustManager = ServerTrustManager(evaluators: evaluators)
@@ -91,7 +91,7 @@ extension AFAPIManager{
             Debug.log("=============================\n")
         }
         
-        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).responseJSON { res in
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).responseData { res in
             
             let statuscode = res.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
             if self.isDebugOn == true{
@@ -123,33 +123,23 @@ extension AFAPIManager{
         
     }
     
-    func parseResponse(_ response : AFDataResponse<Any>, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func parseResponse(_ response : AFDataResponse<Data>, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         let statuscode = response.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
         switch response.result{
         case .success(let value):
-            if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: []) {
-                completion(response.response?.statusCode ?? 200,.success(jsonData))
-            }
-            else {
-                completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
-            }
-            break
+            completion(response.response?.statusCode ?? 200,.success(value))
+            
         case .failure(let error):
             completion(statuscode, .failure(error))
         }
     }
     
-    func parseErrorResponse(_ response : AFDataResponse<Any>, error: Error, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func parseErrorResponse(_ response : AFDataResponse<Data>, error: Error, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         let statuscode = response.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
         switch response.result{
         case .success(let value):
-            if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: []) {
-                completion(statuscode,.success(jsonData))
-            }
-            else {
-                completion(statuscode, .failure(error))
-            }
-            break
+            completion(response.response?.statusCode ?? 200,.success(value))
+            
         case .failure(let error):
             completion(statuscode, .failure(error))
         }
