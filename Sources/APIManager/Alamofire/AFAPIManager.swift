@@ -10,8 +10,6 @@ import Alamofire
 
 //MARK: AFAPIManager Class
 class AFAPIManager: APIManagerProtocol {
-    let statusCodeForCallBack: Int?
-    
     var encoding : ParameterEncoding = JSONEncoding.default
     var sslPinningType : SSLPinningType = .disable
     var isDebugOn: Bool!
@@ -20,8 +18,7 @@ class AFAPIManager: APIManagerProtocol {
     
     var sessionManager : Session!// AF.session
     
-    init(statusCodeForCallBack: Int? = nil, encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
-        self.statusCodeForCallBack = statusCodeForCallBack
+    init(encoding : ParameterEncoding = JSONEncoding.default, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.encoding = encoding
         self.sslPinningType = sslPinningType
         self.isDebugOn = isDebugOn
@@ -72,6 +69,65 @@ extension AFAPIManager {
 //MARK: API Request and Response Parsing
 extension AFAPIManager{
     
+    func requestDecodable<T>(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
+        
+        var headers = HTTPHeaders()
+        
+        header?.forEach({ headerValue in
+            headers.add(HTTPHeader(name: headerValue.key, value: headerValue.value))
+        })
+        
+        sessionManager.session.configuration.timeoutIntervalForRequest = requestTimeout
+        
+        if isDebugOn {
+            Debug.log("\n\n===========Request===========")
+            Debug.log("Url: " + url)
+            Debug.log("Method: " + httpMethod.rawValue)
+            Debug.log("Header: \(header ?? [:])")
+            Debug.log("Parameter: \(param ?? [:])")
+            Debug.log("=============================\n")
+        }
+        
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers)
+            .responseDecodable(of: T.self) { res in
+                let statuscode = res.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
+                if self.isDebugOn == true{
+                    Debug.log("\n\n===========Response===========")
+                    Debug.log("Url: " + url)
+                    Debug.log("StatusCode: \(res.response?.statusCode ?? 0)")
+                    Debug.log("Method: " + httpMethod.rawValue)
+                    Debug.log("Header: \(header ?? [:])")
+                    Debug.log("Parameter: \(param ?? [:])")
+                    Debug.log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
+                    Debug.log("=============================\n")
+                }
+                
+                if let error = res.error {
+                    completion(statuscode, .failure(error))
+                }
+                else if (200..<300) ~= statuscode {
+                    switch res.result {
+                    case .success(let decoded):
+                        completion(statuscode, .success(decoded))
+                    case .failure(let error):
+                        completion(statuscode, .failure(error))
+                    }
+                }
+                else if res.response?.statusCode == APIManagerErrors.sessionExpired.statusCode {
+                    completion(APIManagerErrors.sessionExpired.statusCode, .failure(APIManagerErrors.sessionExpired))
+                } else {
+                    switch res.result {
+                    case .success(_ ):
+                        completion(APIManagerErrors.invalidResponseFromServer.statusCode, .failure(APIManagerErrors.invalidResponseFromServer))
+                    case .failure(let error):
+                        completion(statuscode, .failure(error))
+                    }
+                    
+                }
+            }
+        
+    }
+    
     func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval, param: [String : Any]?, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
         var headers = HTTPHeaders()
@@ -105,10 +161,7 @@ extension AFAPIManager{
                 Debug.log("=============================\n")
             }
             
-            if res.response?.statusCode == self.statusCodeForCallBack {
-                self.parseResponse(res, completion: completion)
-            }
-            else if let error = res.error {
+            if let error = res.error {
                 self.parseErrorResponse(res, error: error, completion: completion)
             }
             else if (200..<300) ~= statuscode {
