@@ -5,16 +5,6 @@
 //  Created by Mac on 16/09/21.
 //
 
-/**
- * APIManager Init
- * - Parameters:
- *  - statusCodeForCallBack: this is api status code which will be used in case you want to break normal flow and get call back.
- *  - statusMessageKey: using this key, manager will try to get string message from json and pass it to statusCodeCallBack.
- *  - statusCodeCallBack: when manager encounter code mentioned in statusCodeForCallBack, manager will trigger this callback to handle specific case instead of normal flow, e.g. we need to handle token expiry condition in our app we will use this call back, normal flow is broken as we do not want to show error message. call back will give message based on key provided in statusMessageKey param.
- *  - sslPinningType: this is ssl pinning type
- *  - isDebugOn: using this you can toggle debug api request print.
- */
-
 import Foundation
 
 //MARK: APIManager Class
@@ -29,6 +19,7 @@ public class APIManager: NSObject {
     
     var manager: APIManagerProtocol!
     
+    /// APIManager is simple api wrapper tool that is made for making ios development fast and easy
     /// - Parameters:
     ///   - statusCodeForCallBack: this is api status code which will be used in case you want to break normal flow and get call back.
     ///   - statusMessageKey: using this key, manager will try to get string message from json and pass it to `statusCodeCallBack`.
@@ -65,7 +56,7 @@ extension APIManager {
             return
         }
         
-        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
+        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
             switch result{
                 
             case .success(let jsondata):
@@ -118,7 +109,7 @@ extension APIManager {
             return
         }
         
-        manager.request(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
+        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
             switch result{
                 
             case .success(let jsondata):

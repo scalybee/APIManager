@@ -72,7 +72,7 @@ extension AFAPIManager {
 //MARK: API Request and Response Parsing
 extension AFAPIManager{
     
-    func request(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval, param: [String : Any]?, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval, param: [String : Any]?, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
         var headers = HTTPHeaders()
         
