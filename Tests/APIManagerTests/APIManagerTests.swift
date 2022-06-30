@@ -6,8 +6,6 @@
             // This is an example of a functional test case.
             // Use XCTAssert and related functions to verify your tests produce the correct
             // results.
-            XCTAssertEqual(APIManager(statusCodeForCallBack: 401, statusMessageKey: "message", statusCodeCallBack: { statusMessage in
-                
-            }).description, "APIManager.APIManager")
+            XCTAssertEqual(APIManager().description, "APIManager.APIManager")
         }
     }

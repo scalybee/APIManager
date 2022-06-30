@@ -8,11 +8,7 @@
 import Foundation
 
 //MARK: APIManager Class
-public class APIManager: NSObject {
-    
-    let statusCodeForCallBack: Int?
-    let statusMessageKey: String?
-    let statusCodeCallBack : ((String?)->Void)?
+public class APIManager: NSObject, APIManagerProtocol {
     
     var sslPinningType : SSLPinningType = .disable
     var isDebugOn : Bool!
@@ -26,18 +22,28 @@ public class APIManager: NSObject {
     ///   - statusCodeCallBack: when manager encounter code mentioned in `statusCodeForCallBack`, manager will trigger this callback to handle specific case instead of normal flow, e.g. we need to handle token expiry condition in our app we will use this call back, normal flow is broken as we do not want to show error message. call back will give message based on key provided in `statusMessageKey` param.
     ///   - sslPinningType: this is ssl pinning type
     ///   - isDebugOn: using this you can toggle debug api request print.
-    public init(statusCodeForCallBack: Int? = nil, statusMessageKey: String? = nil, statusCodeCallBack : ((String?)->Void)? = nil, sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
-        self.statusCodeForCallBack = statusCodeForCallBack
-        self.statusMessageKey = statusMessageKey
-        self.statusCodeCallBack = statusCodeCallBack
+    public init(sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
-        manager = AFAPIManager(statusCodeForCallBack: statusCodeForCallBack, sslPinningType: sslPinningType, isDebugOn: isDebugOn)
+        manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
     }
     
 }
 
 //MARK: request with codable support
 extension APIManager {
+    
+    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
+        
+        guard Reachability.isConnectedToNetwork() == true else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+            }
+            return
+        }
+        
+        manager.requestData(url: url, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
+        
+    }
     
     /// This method is used for making request to endpoint with provided configurations.
     /// - Parameters:
@@ -47,7 +53,7 @@ extension APIManager {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func requestDecodable<T:Codable>(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
+    public func requestDecodable<T:Codable>(decodeWith: T.Type, url : String, httpMethod : APIHTTPMethod, header: [String:String]? = nil, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -56,35 +62,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
-            switch result{
-                
-            case .success(let jsondata):
-                if let statusCodeForCallBack = self?.statusCodeForCallBack,  statuscode == statusCodeForCallBack, let statusMessageKey = self?.statusMessageKey, self?.statusCodeCallBack != nil {
-                    let statusMessage = try? (JSONSerialization.jsonObject(with: jsondata, options: .mutableContainers) as? [String:Any])?[statusMessageKey] as? String
-                    self?.statusCodeCallBack?(statusMessage)
-                }
-                else{
-                    do {
-                        let users = try JSONDecoder().decode(T.self, from: jsondata)
-                        completion(statuscode, .success(users))
-                    }
-                    catch {
-                        completion(APIManagerErrors.jsonParsingFailure.statusCode, .failure(error))
-                    }
-                }
-                
-            case .failure(let error):
-                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
-                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
-                }
-                else{
-                    completion(statuscode,.failure(error))
-                }
-                
-            }
-            
-        }
+        manager.requestDecodable(decodeWith: decodeWith, url: url, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
         
     }
     
@@ -100,7 +78,7 @@ extension APIManager {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing response data or error
-    public func requestData(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<Data, Error>) -> Void){
+    public func requestData(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]? = nil, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<Data, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -109,29 +87,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { [weak self] statuscode,result in
-            switch result{
-                
-            case .success(let jsondata):
-                if let statusCodeForCallBack = self?.statusCodeForCallBack,  statuscode == statusCodeForCallBack, let statusMessageKey = self?.statusMessageKey, self?.statusCodeCallBack != nil {
-                    let statusMessage = try? (JSONSerialization.jsonObject(with: jsondata, options: .mutableContainers) as? [String:Any])?[statusMessageKey] as? String
-                    self?.statusCodeCallBack?(statusMessage)
-                }
-                else{
-                    completion(statuscode, .success(jsondata))
-                }
-                
-            case .failure(let error):
-                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
-                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
-                }
-                else{
-                    completion(statuscode,.failure(error))
-                }
-                
-            }
-            
-        }
+        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
         
     }
 }
