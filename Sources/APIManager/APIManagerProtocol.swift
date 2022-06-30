@@ -25,6 +25,6 @@ internal protocol APIManagerProtocol {
     ///   - param: parameters to be sent to server
     ///   - completion: Response of server in either JSON data or error format
     func requestData(url: String, httpMethod: APIHTTPMethod ,header: [String:String]?, requestTimeout : TimeInterval, param: [String:Any]?, completion: @escaping (Int,Result<Data,Error>)-> Void)
-    func requestDecodable<T:Codable>(_ url : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]?, requestTimeout: TimeInterval, completion : @escaping (Int,Result<T, Error>) -> Void)
+    func requestDecodable<T:Codable>(decodeWith: T.Type, url : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]?, requestTimeout: TimeInterval, completion : @escaping (Int,Result<T, Error>) -> Void)
     func cancelAllRequests()
 }

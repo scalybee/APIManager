@@ -33,6 +33,7 @@ public class APIManager: NSObject, APIManagerProtocol {
 extension APIManager {
     
     func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval = 60, param: [String : Any]?, completion: @escaping (Int, Result<Data, Error>) -> Void) {
+        
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
@@ -41,6 +42,7 @@ extension APIManager {
         }
         
         manager.requestData(url: url, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param, completion: completion)
+        
     }
     
     /// This method is used for making request to endpoint with provided configurations.
@@ -51,7 +53,7 @@ extension APIManager {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func requestDecodable<T:Codable>(_ url : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void){
+    public func requestDecodable<T:Codable>(decodeWith: T.Type, url : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -60,29 +62,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url: url, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { statuscode, result in
-            switch result {
-                
-            case .success(let jsondata):
-                do {
-                    let users = try JSONDecoder().decode(T.self, from: jsondata)
-                    completion(statuscode, .success(users))
-                }
-                catch {
-                    completion(APIManagerErrors.jsonParsingFailure.statusCode, .failure(error))
-                }
-                
-            case .failure(let error):
-                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
-                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
-                }
-                else{
-                    completion(statuscode,.failure(error))
-                }
-                
-            }
-            
-        }
+        manager.requestDecodable(decodeWith: decodeWith, url: url, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
         
     }
     
@@ -107,23 +87,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param) { statuscode, result in
-            switch result {
-                
-            case .success(let jsondata):
-                completion(statuscode, .success(jsondata))
-                
-            case .failure(let error):
-                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
-                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
-                }
-                else{
-                    completion(statuscode,.failure(error))
-                }
-                
-            }
-            
-        }
+        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param, completion: completion)
         
     }
 }

@@ -30,16 +30,22 @@ public enum APIManagerErrors: Error {
         switch self{
         case .fileUploadFailed:
             return 409
+            
         case .invalidResponseFromServer:
             return 500
+            
         case .sessionExpired:
             return 419
+            
         case .jsonParsingFailure:
             return 422
+            
         case .internetOffline:
             return URLError.notConnectedToInternet.rawValue
+            
         case .apiError(_, let code):
             return code
+            
         }
     }
     
@@ -47,22 +53,34 @@ public enum APIManagerErrors: Error {
 
 //MARK: API Related Custom Error Messages
 extension APIManagerErrors: LocalizedError {
+    
     public var errorDescription: String? {
+        
         switch self {
+            
         case .fileUploadFailed:
             return NSLocalizedString(ErrorMessages.fileUploadFailed.rawValue, comment: "")
+            
         case .invalidResponseFromServer:
             return NSLocalizedString(ErrorMessages.invalidResponseFromServer.rawValue, comment: "")
+            
         case .sessionExpired:
             return NSLocalizedString(ErrorMessages.sessionExpired.rawValue, comment: "")
+            
         case .jsonParsingFailure:
             return NSLocalizedString(ErrorMessages.jsonParsingFailure.rawValue, comment: "")
+            
         case .internetOffline:
             return NSLocalizedString(ErrorMessages.internetOffline.rawValue, comment: "")
+            
         case .apiError(let message, _):
             return NSLocalizedString(message, comment: "")
+            
+            
         }
+        
     }
+    
 }
 
 
