@@ -133,7 +133,7 @@ extension AFAPIManager{
         
     }
     
-    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval, param: [String : Any]?, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
         var headers = HTTPHeaders()
         

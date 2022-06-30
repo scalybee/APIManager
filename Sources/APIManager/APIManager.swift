@@ -32,7 +32,7 @@ public class APIManager: NSObject, APIManagerProtocol {
 //MARK: request with codable support
 extension APIManager {
     
-    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, requestTimeout: TimeInterval = 60, param: [String : Any]?, completion: @escaping (Int, Result<Data, Error>) -> Void) {
+    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -41,7 +41,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url: url, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param, completion: completion)
+        manager.requestData(url: url, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
         
     }
     
@@ -53,7 +53,7 @@ extension APIManager {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing codable or error
-    public func requestDecodable<T:Codable>(decodeWith: T.Type, url : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void) {
+    public func requestDecodable<T:Codable>(decodeWith: T.Type, url : String, httpMethod : APIHTTPMethod, header: [String:String]? = nil, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<T, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -78,7 +78,7 @@ extension APIManager {
     ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
     ///   - requesttimeout: Request timeout
     ///   - completion: Response of API: containing response data or error
-    public func requestData(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<Data, Error>) -> Void){
+    public func requestData(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]? = nil, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<Data, Error>) -> Void){
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -87,7 +87,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, requestTimeout: requestTimeout, param: param, completion: completion)
+        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
         
     }
 }
