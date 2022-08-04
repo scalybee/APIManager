@@ -36,7 +36,7 @@ extension APIManager {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+                completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
             }
             return
         }
@@ -57,7 +57,7 @@ extension APIManager {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+                completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
             }
             return
         }
@@ -82,7 +82,7 @@ extension APIManager {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+                completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
             }
             return
         }

@@ -101,7 +101,7 @@ extension AFAPIManager{
         sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers)
             .responseDecodable(of: decodeWith) { res in
                 
-                let statuscode = res.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
+                let statuscode = res.response?.statusCode ?? APIManagerError.sessionExpired.statusCode
                 
                 if self.isDebugOn == true{
                     Debug.log("\n\n===========Response===========")
@@ -120,8 +120,8 @@ extension AFAPIManager{
                     completion(statuscode, .success(decoded))
                     
                 case .failure(let error):
-                    if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
-                        completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
+                    if (error as NSError).code == APIManagerError.internetOffline.statusCode {
+                        completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
                     }
                     else {
                         completion(statuscode,.failure(error))
@@ -152,38 +152,124 @@ extension AFAPIManager{
             Debug.log("=============================\n")
         }
         
-        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers).responseData { res in
-            
-            let statuscode = res.response?.statusCode ?? APIManagerErrors.sessionExpired.statusCode
-            
-            if self.isDebugOn == true{
-                Debug.log("\n\n===========Response===========")
-                Debug.log("Url: " + url)
-                Debug.log("API status code: \(res.response?.statusCode ?? 0)")
-                Debug.log("Method: " + httpMethod.rawValue)
-                Debug.log("Header: \(header ?? [:])")
-                Debug.log("Parameter: \(param ?? [:])")
-                Debug.log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
-                Debug.log("=============================\n")
-            }
-            
-            switch res.result {
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers)
+            .responseData { res in
                 
-            case .success(let value):
-                completion(res.response?.statusCode ?? 200,.success(value))
+                let statuscode = res.response?.statusCode ?? APIManagerError.sessionExpired.statusCode
                 
-            case .failure(let error):
-                if (error as NSError).code == APIManagerErrors.internetOffline.statusCode {
-                    completion(APIManagerErrors.internetOffline.statusCode,.failure(APIManagerErrors.internetOffline))
-                }
-                else {
-                    completion(statuscode,.failure(error))
+                if self.isDebugOn == true{
+                    Debug.log("\n\n===========Response===========")
+                    Debug.log("Url: " + url)
+                    Debug.log("API status code: \(res.response?.statusCode ?? 0)")
+                    Debug.log("Method: " + httpMethod.rawValue)
+                    Debug.log("Header: \(header ?? [:])")
+                    Debug.log("Parameter: \(param ?? [:])")
+                    Debug.log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
+                    Debug.log("=============================\n")
                 }
                 
+                switch res.result {
+                    
+                case .success(let value):
+                    completion(res.response?.statusCode ?? 200,.success(value))
+                    
+                case .failure(let error):
+                    if (error as NSError).code == APIManagerError.internetOffline.statusCode {
+                        completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
+                    }
+                    else {
+                        completion(statuscode,.failure(error))
+                    }
+                    
+                }
+                
             }
-            
+        
+    }
+    
+    func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
+        let urlRequest = try URLRequest(url: url, method: HTTPMethod(rawValue: httpMethod.rawValue), headers: HTTPHeaders(header ?? [:]))
+        
+        var headers = HTTPHeaders()
+        
+        header?.forEach({ headerValue in
+            headers.add(HTTPHeader(name: headerValue.key, value: headerValue.value))
+        })
+       
+        headers.add(HTTPHeader(name: "Content-type", value: "multipart/form-data"))
+        
+        sessionManager.session.configuration.timeoutIntervalForRequest = requestTimeout
+        
+        if isDebugOn {
+            Debug.log("\n\n===========Request===========")
+            Debug.log("Url: " + url)
+            Debug.log("Method: " + httpMethod.rawValue)
+            Debug.log("Header: \(header ?? [:])")
+            Debug.log("Parameter: \(param ?? [:])")
+            Debug.log("=============================\n")
         }
         
+        sessionManager.upload(multipartFormData: { multiPart in
+            param?.forEach({ (key, value) in
+                if let temp = value as? String {
+                    multiPart.append(temp.data(using: .utf8)!, withName: key)
+                }
+                else if let temp = value as? Int {
+                    multiPart.append("\(temp)".data(using: .utf8)!, withName: key)
+                }
+                else if let temp = value as? NSArray {
+                    temp.forEach({ element in
+                        let keyObj = key + "[]"
+                        if let string = element as? String {
+                            multiPart.append(string.data(using: .utf8)!, withName: keyObj)
+                        } else
+                        if let num = element as? Int {
+                            let value = "\(num)"
+                            multiPart.append(value.data(using: .utf8)!, withName: keyObj)
+                        }
+                    })
+                }
+            })
+            
+            files.forEach { file in
+                multiPart.append(file.fileURL, withName: file.withName, fileName: file.fileName, mimeType: file.mimeType)
+            }
+            
+        }, with: urlRequest)
+            .uploadProgress(queue: uploadProgressQueue) { progress in
+                uploadProgress(progress.fractionCompleted)
+            }
+            .responseData { res in
+                
+                let statuscode = res.response?.statusCode ?? APIManagerError.sessionExpired.statusCode
+                
+                if self.isDebugOn == true{
+                    Debug.log("\n\n===========Response===========")
+                    Debug.log("Url: " + url)
+                    Debug.log("API status code: \(res.response?.statusCode ?? 0)")
+                    Debug.log("Method: " + httpMethod.rawValue)
+                    Debug.log("Header: \(header ?? [:])")
+                    Debug.log("Parameter: \(param ?? [:])")
+                    Debug.log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
+                    Debug.log("=============================\n")
+                }
+                
+                switch res.result {
+                    
+                case .success(let value):
+                    completion(res.response?.statusCode ?? 200,.success(value))
+                    
+                case .failure(let error):
+                    if (error as NSError).code == APIManagerError.internetOffline.statusCode {
+                        completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
+                    }
+                    else {
+                        completion(statuscode,.failure(error))
+                    }
+                    
+                }
+                
+            }
     }
     
 }
