@@ -92,6 +92,22 @@ extension APIManager {
     }
 }
 
+
+//MARK: upload request
+extension APIManager {
+    func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval = 120, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping (Double) -> Void, completion: @escaping (Int, Result<Data, Error>) -> Void) throws {
+        
+        guard Reachability.isConnectedToNetwork() == true else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
+            }
+            return
+        }
+        
+        try manager.upload(url: url, httpMethod: httpMethod, header: header, param: param, files: files, requestTimeout: requestTimeout, uploadProgressQueue: uploadProgressQueue, uploadProgress: uploadProgress, completion: completion)
+    }
+}
+
 extension APIManager {
     public func cancelAllRequests(){
         manager.cancelAllRequests()
