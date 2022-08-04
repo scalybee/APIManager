@@ -79,7 +79,7 @@ extension AFAPIManager {
 //MARK: API Request and Response Parsing
 extension AFAPIManager{
     
-    func requestDecodable<T>(_ url: String, decodeWith: T.Type, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
+    func requestDecodable<T>(url: String, decodeWith: T.Type, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
         
         var headers = HTTPHeaders()
         
@@ -133,7 +133,7 @@ extension AFAPIManager{
         
     }
     
-    func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
         var headers = HTTPHeaders()
         
@@ -187,7 +187,7 @@ extension AFAPIManager{
         
     }
     
-    func upload(_ url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
+    func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
         
         var hTTPHeaders = HTTPHeaders()
         
@@ -213,14 +213,7 @@ extension AFAPIManager{
         }
         
         sessionManager.upload(multipartFormData: { multiPart in
-            param?.forEach({ (key, value) in
-//                if let temp = value as? String {
-//                    multiPart.append(temp.data(using: .utf8)!, withName: key)
-//                }
-//                else if let temp = value as? Int {
-//                    multiPart.append("\(temp)".data(using: .utf8)!, withName: key)
-//                }
-                
+            param?.forEach({ (key, value) in  
                 if let temp = value as? NSArray {
                     temp.forEach({ element in
                         let keyObj = key + "[]"
