@@ -188,15 +188,16 @@ extension AFAPIManager{
     }
     
     func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
-        let urlRequest = try URLRequest(url: url, method: HTTPMethod(rawValue: httpMethod.rawValue), headers: HTTPHeaders(header ?? [:]))
         
-        var headers = HTTPHeaders()
+        var hTTPHeaders = HTTPHeaders()
         
         header?.forEach({ headerValue in
-            headers.add(HTTPHeader(name: headerValue.key, value: headerValue.value))
+            hTTPHeaders.add(HTTPHeader(name: headerValue.key, value: headerValue.value))
         })
-       
-        headers.add(HTTPHeader(name: "Content-type", value: "multipart/form-data"))
+        
+        hTTPHeaders.add(HTTPHeader(name: "Content-type", value: "multipart/form-data"))
+        
+        let urlRequest = try URLRequest(url: url, method: HTTPMethod(rawValue: httpMethod.rawValue), headers: hTTPHeaders)
         
         sessionManager.session.configuration.timeoutIntervalForRequest = requestTimeout
         
