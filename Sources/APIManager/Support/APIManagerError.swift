@@ -56,7 +56,7 @@ extension APIManagerError: LocalizedError {
             return NSLocalizedString("Something went wrong, please try again after some time.", comment: "")
             
         case .sessionExpired:
-            return NSLocalizedString("Token has expired.", comment: "")
+            return NSLocalizedString("Session has expired, please login again.", comment: "")
             
         case .jsonParsingFailure:
             return NSLocalizedString("Please try again, their was in parsing response. if issue persist contact admin.", comment: "")
