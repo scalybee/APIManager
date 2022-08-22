@@ -79,7 +79,7 @@ extension AFAPIManager {
 //MARK: API Request and Response Parsing
 extension AFAPIManager{
     
-    func requestDecodable<T>(decodeWith: T.Type, url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
+    func requestDecodable<T>(_ url: String, decodeWith: T.Type, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
         
         var headers = HTTPHeaders()
         
@@ -133,7 +133,7 @@ extension AFAPIManager{
         
     }
     
-    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
         var headers = HTTPHeaders()
         
@@ -187,7 +187,7 @@ extension AFAPIManager{
         
     }
     
-    func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
+    func upload(_ url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
         
         var hTTPHeaders = HTTPHeaders()
         
