@@ -32,7 +32,7 @@ public class APIManager: NSObject, APIManagerProtocol {
 //MARK: request with codable support
 extension APIManager {
     
-    func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
+    public func requestData(url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -68,34 +68,9 @@ extension APIManager {
     
 }
 
-//MARK: request without codable support
-extension APIManager {
-    /// This method is used for making request to endpoint with provided configurations.
-    /// - Parameters:
-    ///   - endpoint: Web Service Name
-    ///   - httpMethod: Type of api request
-    ///   - header: Header to be sent to api
-    ///   - param: Parameters to be sent to api, if no parameter then do not pass this parameter
-    ///   - requesttimeout: Request timeout
-    ///   - completion: Response of API: containing response data or error
-    public func requestData(_ endpoint : String, httpMethod : APIHTTPMethod, header: [String:String]? = nil, param:[String: Any]? = nil, requestTimeout: TimeInterval = 60, completion : @escaping (Int,Result<Data, Error>) -> Void){
-        
-        guard Reachability.isConnectedToNetwork() == true else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
-            }
-            return
-        }
-        
-        manager.requestData(url: endpoint, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
-        
-    }
-}
-
-
 //MARK: upload request
 extension APIManager {
-    func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval = 120, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping (Double) -> Void, completion: @escaping (Int, Result<Data, Error>) -> Void) throws {
+    public func upload(url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval = 120, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping (Double) -> Void, completion: @escaping (Int, Result<Data, Error>) -> Void) throws {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
