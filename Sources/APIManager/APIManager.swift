@@ -95,7 +95,7 @@ extension APIManager {
             return
         }
         
-        try manager.upload(url: url, httpMethod: httpMethod, header: header, param: param, files: files, requestTimeout: requestTimeout, uploadProgressQueue: uploadProgressQueue, uploadProgress: uploadProgress, completion: completion)
+        try manager.upload(url, httpMethod: httpMethod, header: header, param: param, files: files, requestTimeout: requestTimeout, uploadProgressQueue: uploadProgressQueue, uploadProgress: uploadProgress, completion: completion)
     }
 }
 
