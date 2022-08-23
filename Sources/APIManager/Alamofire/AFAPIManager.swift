@@ -214,13 +214,14 @@ extension AFAPIManager{
         
         sessionManager.upload(multipartFormData: { multiPart in
             param?.forEach({ (key, value) in
-                if let temp = value as? String {
-                    multiPart.append(temp.data(using: .utf8)!, withName: key)
-                }
-                else if let temp = value as? Int {
-                    multiPart.append("\(temp)".data(using: .utf8)!, withName: key)
-                }
-                else if let temp = value as? NSArray {
+//                if let temp = value as? String {
+//                    multiPart.append(temp.data(using: .utf8)!, withName: key)
+//                }
+//                else if let temp = value as? Int {
+//                    multiPart.append("\(temp)".data(using: .utf8)!, withName: key)
+//                }
+                
+                if let temp = value as? NSArray {
                     temp.forEach({ element in
                         let keyObj = key + "[]"
                         if let string = element as? String {
@@ -231,6 +232,9 @@ extension AFAPIManager{
                             multiPart.append(value.data(using: .utf8)!, withName: keyObj)
                         }
                     })
+                }
+                else {
+                    multiPart.append("\(value)".data(using: .utf8)!, withName: key)
                 }
             })
             
