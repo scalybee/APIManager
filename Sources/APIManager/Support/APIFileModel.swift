@@ -9,8 +9,8 @@ import Foundation
 
 //MARK: Struct for Uploading Files
 public struct APIFileModel {
-    let fileURL : URL
-    let withName : String
-    let fileName : String
-    let mimeType : String
+    public let fileURL : URL
+    public let withName : String
+    public let fileName : String
+    public let mimeType : String
 }
