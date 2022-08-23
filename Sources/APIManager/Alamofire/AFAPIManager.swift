@@ -233,6 +233,9 @@ extension AFAPIManager{
                         }
                     })
                 }
+                else if let temp = value as? Bool {
+                    multiPart.append(temp.description.data(using: .utf8)!, withName: key)
+                }
                 else {
                     multiPart.append("\(value)".data(using: .utf8)!, withName: key)
                 }
