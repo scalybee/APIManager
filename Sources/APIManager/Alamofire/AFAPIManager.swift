@@ -207,7 +207,8 @@ extension AFAPIManager{
             Debug.log("Method: " + httpMethod.rawValue)
             Debug.log("Header: \(header ?? [:])")
             Debug.log("Parameter: \(param ?? [:])")
-            Debug.log("Files:" \(files))
+            Debug.log("Files:")
+            print(files)
             Debug.log("=============================\n")
         }
         
@@ -252,7 +253,8 @@ extension AFAPIManager{
                     Debug.log("Method: " + httpMethod.rawValue)
                     Debug.log("Header: \(header ?? [:])")
                     Debug.log("Parameter: \(param ?? [:])")
-                    Debug.log("Files:" \(files))
+                    Debug.log("Files: ")
+                    print(files)
                     Debug.log("Response: " + (res.data != nil ? String.init(data: res.data!, encoding: .utf8) ?? "NO DATA" : "NO DATA"))
                     Debug.log("=============================\n")
                 }
