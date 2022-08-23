@@ -9,8 +9,15 @@ import Foundation
 
 //MARK: Struct for Uploading Files
 public struct APIFileModel {
-    public let fileURL : URL
-    public let withName : String
-    public let fileName : String
-    public let mimeType : String
+    let fileURL : URL
+    let withName : String
+    let fileName : String
+    let mimeType : String
+    
+    public init(fileURL: URL, key: String, fileName: String, mimeType: String) {
+        self.fileURL = fileURL
+        self.withName = key
+        self.fileName = fileName
+        self.mimeType = mimeType
+    }
 }
