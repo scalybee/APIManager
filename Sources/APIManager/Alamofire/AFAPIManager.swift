@@ -227,10 +227,10 @@ extension AFAPIManager{
                     }
                 }
                 else if let temp = paramValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
-                    multiPart.append(tempData, withName: key)
+                    multiPart.append(tempData, withName: paramKey)
                 }
                 else if let tempData = "\(paramValue)".data(using: .utf8) {
-                    multiPart.append(tempData, withName: key)
+                    multiPart.append(tempData, withName: paramKey)
                 }
             })
 //                if let temp = value as? NSArray {
