@@ -216,7 +216,7 @@ extension AFAPIManager{
             param?.forEach({ (key, value) in  
                 if let temp = value as? NSArray {
                     if let data = try? JSONSerialization.data(withJSONObject: temp, options: []), let string = String(data: data, encoding: String.Encoding.utf8), let data = string.data(using: String.Encoding.utf8) {
-                        multiPart.append(data, withName: key)
+                        multiPart.append(data, withName: key + "[]")
                     }
                 }
                 else if let temp = value as? Bool {
