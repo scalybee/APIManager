@@ -216,13 +216,12 @@ extension AFAPIManager{
             param?.forEach({ (key, value) in  
                 if let temp = value as? NSArray {
                     temp.forEach({ element in
-                        let keyObj = key
                         if let string = element as? String {
-                            multiPart.append(string.data(using: .utf8)!, withName: keyObj)
+                            multiPart.append(string.data(using: .utf8)!, withName: key)
                         } else
                         if let num = element as? Int {
                             let value = "\(num)"
-                            multiPart.append(value.data(using: .utf8)!, withName: keyObj)
+                            multiPart.append(value.data(using: .utf8)!, withName: key)
                         }
                     })
                 }
