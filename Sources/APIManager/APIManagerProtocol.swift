@@ -25,8 +25,8 @@ internal protocol APIManagerProtocol {
     ///   - param: parameters to be sent to server
     ///   - completion: Response of server in either JSON data or error format
 
-    func requestData(url: String, httpMethod: APIHTTPMethod ,header: [String:String]?, param: [String:Any]?, requestTimeout : TimeInterval, completion: @escaping (Int,Result<Data,Error>)-> Void)
-    func requestDecodable<T:Codable>(url : String, decodeWith: T.Type, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]?, requestTimeout: TimeInterval, completion : @escaping (Int,Result<T, Error>) -> Void)
-    func upload(url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws
+    func requestData(_ url: String, httpMethod: APIHTTPMethod ,header: [String:String]?, param: [String:Any]?, requestTimeout : TimeInterval, completion: @escaping (Int,Result<Data,Error>)-> Void)
+    func requestDecodable<T:Codable>(_ url : String, decodeWith: T.Type, httpMethod : APIHTTPMethod, header: [String:String]?, param:[String: Any]?, requestTimeout: TimeInterval, completion : @escaping (Int,Result<T, Error>) -> Void)
+    func upload(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws
     func cancelAllRequests()
 }
