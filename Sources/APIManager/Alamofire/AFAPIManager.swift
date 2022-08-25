@@ -217,11 +217,20 @@ extension AFAPIManager{
                 if let arrayList = paramValue as? [[String: Any]] {
                     arrayList.enumerated().forEach { arrayIndex, arrayValue in
                         arrayValue.forEach { dictKey, dictValue in
-                            multiPart.append("\(dictValue)".data(using: String.Encoding.utf8)!, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
+                            if let temp = dictValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
+                                multiPart.append(tempData, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
+                            }
+                            else if let tempData = "\(dictValue)".data(using: .utf8) {
+                                multiPart.append(tempData, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
+                            }
                         }
                     }
-                } else {
-                    multiPart.append("\(paramValue)".data(using: String.Encoding.utf8)!, withName: paramKey as String)
+                }
+                else if let temp = paramValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
+                    multiPart.append(tempData, withName: key)
+                }
+                else if let tempData = "\(paramValue)".data(using: .utf8) {
+                    multiPart.append(tempData, withName: key)
                 }
             })
 //                if let temp = value as? NSArray {
