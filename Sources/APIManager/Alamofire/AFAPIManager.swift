@@ -214,18 +214,7 @@ extension AFAPIManager{
         
         sessionManager.upload(multipartFormData: { multiPart in
             param?.forEach({ (key, value) in  
-                if let temp = value as? NSArray {
-                    temp.forEach({ element in
-                        if let string = element as? String {
-                            multiPart.append(string.data(using: .utf8)!, withName: key)
-                        } else
-                        if let num = element as? Int {
-                            let value = "\(num)"
-                            multiPart.append(value.data(using: .utf8)!, withName: key)
-                        }
-                    })
-                }
-                else if let temp = value as? Bool {
+                if let temp = value as? Bool {
                     multiPart.append("\(temp ? 1 : 0)".data(using: .utf8)!, withName: key)
                 }
                 else {
