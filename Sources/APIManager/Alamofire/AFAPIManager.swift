@@ -216,7 +216,7 @@ extension AFAPIManager{
             param?.forEach({ (key, value) in  
                 if let temp = value as? NSArray {
                     temp.forEach({ element in
-                        let keyObj = key + "[]"
+                        let keyObj = key
                         if let string = element as? String {
                             multiPart.append(string.data(using: .utf8)!, withName: keyObj)
                         } else
