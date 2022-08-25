@@ -213,15 +213,15 @@ extension AFAPIManager{
         }
         
         sessionManager.upload(multipartFormData: { multiPart in
-            param?.forEach({ (outerKey, outerValue) in
-                if let val = outerValue as? [[String: Any]] {
-                    val.enumerated().forEach { middleIndex, middleValue in
-                        middleValue.forEach { lastKey, lastValue in
-                            multiPart.append("\(lastValue)".data(using: String.Encoding.utf8)!, withName: "\(outerKey)[\(middleIndex)][\(lastKey)]" as String)
+            param?.forEach({ (paramKey, paramValue) in
+                if let arrayList = paramValue as? [[String: Any]] {
+                    arrayList.enumerated().forEach { arrayIndex, arrayValue in
+                        arrayValue.forEach { dictKey, dictValue in
+                            multiPart.append("\(dictValue)".data(using: String.Encoding.utf8)!, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
                         }
                     }
                 } else {
-                    multiPart.append("\(outerValue)".data(using: String.Encoding.utf8)!, withName: outerKey as String)
+                    multiPart.append("\(paramValue)".data(using: String.Encoding.utf8)!, withName: paramKey as String)
                 }
             })
 //                if let temp = value as? NSArray {
