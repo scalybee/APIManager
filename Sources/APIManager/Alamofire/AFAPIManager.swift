@@ -214,55 +214,18 @@ extension AFAPIManager{
         
         sessionManager.upload(multipartFormData: { multiPart in
             param?.forEach({ (key, value) in
-                if  (value as AnyObject).isKind(of: NSMutableArray.self)
-                {
-                    let arrayObj = value as! NSMutableArray
-                    //let data2 = NSData(bytes: &arrayObj, length: arrayObj.count)
-                    
-                    let count : Int  = arrayObj.count
-                    
-                    for i in 0  ..< count
-                    {
-                        
-                        let value = arrayObj[i] as! Int
-                        let valueObj = String(value)
-                        
-                        let keyObj = key + "[" + String(i) + "]"
-                        
-                        multiPart.append(valueObj.data(using: String.Encoding.utf8)!, withName: keyObj)
+                if let temp = value as? NSArray {
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: temp, options:[]) {
+                        multiPart.append(jsonData, withName: key as String)
                     }
-                    
-                    
                 }
-                else{
-                    var valueStr = String()
-                    if let param = value as? String{
-                        valueStr = param
-                    }else{
-                        let valueInt = value as! Int
-                        valueStr = String(valueInt)
-                    }
-                    
-                    multiPart.append((valueStr).data(using: String.Encoding.utf8)!, withName: key)
+                else if let temp = value as? Bool {
+                    multiPart.append("\(temp ? 1 : 0)".data(using: .utf8)!, withName: key)
                 }
-                
+                else {
+                    multiPart.append("\(value)".data(using: .utf8)!, withName: key)
+                }
             })
-            //            param?.forEach({ (key, value) in
-            //                if let temp = value as? NSArray {
-            ////                    for (key1, value1) in temp {
-            ////                        multipartFormData.append("\(value1)".data(using: String.Encoding.utf8)!, withName: "\(key)[\(key1)]" as String)
-            ////                    }
-            //                    if let jsonData = try? JSONSerialization.data(withJSONObject: temp, options:[]) {
-            //                        multiPart.append(jsonData, withName: key as String)
-            //                    }
-            //                }
-            //                else if let temp = value as? Bool {
-            //                    multiPart.append("\(temp ? 1 : 0)".data(using: .utf8)!, withName: key)
-            //                }
-            //                else {
-            //                    multiPart.append("\(value)".data(using: .utf8)!, withName: key)
-            //                }
-            //            })
             
             files.forEach { file in
                 multiPart.append(file.fileURL, withName: file.withName, fileName: file.fileName, mimeType: file.mimeType)
