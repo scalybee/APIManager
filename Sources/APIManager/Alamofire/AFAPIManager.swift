@@ -226,6 +226,16 @@ extension AFAPIManager{
                         }
                     }
                 }
+                else if let dataArrayList = paramValue as? [Any] {
+                    dataArrayList.enumerated().forEach { index, value in
+                        if let temp = value as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
+                            multiPart.append(tempData, withName: paramKey)
+                        }
+                        else if let dataValue = "\(value)".data(using: .utf8) {
+                            multiPart.append(dataValue, withName: "\(paramKey)[\(index)]" as String)
+                        }
+                    }
+                }
                 else if let temp = paramValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
                     multiPart.append(tempData, withName: paramKey)
                 }
