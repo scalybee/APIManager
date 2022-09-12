@@ -236,7 +236,7 @@ extension AFAPIManager{
                         }
                         else if let dataValue = "\(value)".data(using: .utf8) {
                             multiPart.append(dataValue, withName: "\(paramKey)[\(index)]" as String)
-                            print("\(paramKey)[\(index)] : \(dataValue)")
+                            print("\(paramKey)[\(index)] : \(value)")
                         }
                     }
                 }
