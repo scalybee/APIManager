@@ -219,9 +219,11 @@ extension AFAPIManager{
                         arrayValue.forEach { dictKey, dictValue in
                             if let temp = dictValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
                                 multiPart.append(tempData, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
+                                print("\(paramKey)[\(arrayIndex)][\(dictKey)] : \(temp)")
                             }
                             else if let tempData = "\(dictValue)".data(using: .utf8) {
                                 multiPart.append(tempData, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
+                                print("\(paramKey)[\(arrayIndex)][\(dictKey)] : \(dictValue)")
                             }
                         }
                     }
@@ -229,20 +231,25 @@ extension AFAPIManager{
                 else if let dataArrayList = paramValue as? [Any] {
                     dataArrayList.enumerated().forEach { index, value in
                         if let temp = value as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
-                            multiPart.append(tempData, withName: paramKey)
+                            multiPart.append(tempData, withName: "\(paramKey)[\(index)]" as String)
+                            print("\(paramKey)[\(index)] : \(value)")
                         }
                         else if let dataValue = "\(value)".data(using: .utf8) {
                             multiPart.append(dataValue, withName: "\(paramKey)[\(index)]" as String)
+                            print("\(paramKey)[\(index)] : \(dataValue)")
                         }
                     }
                 }
                 else if let temp = paramValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
                     multiPart.append(tempData, withName: paramKey)
+                    print("\(paramKey) : \(paramValue)")
                 }
                 else if let tempData = "\(paramValue)".data(using: .utf8) {
                     multiPart.append(tempData, withName: paramKey)
+                    print("\(paramKey) : \(paramValue)")
                 }
             })
+            
 //                if let temp = value as? NSArray {
 //                    if let jsonData = try? JSONSerialization.data(withJSONObject: temp, options:[]) {
 //                        multiPart.append(jsonData, withName: key)
@@ -259,6 +266,8 @@ extension AFAPIManager{
             files.forEach { file in
                 multiPart.append(file.fileURL, withName: file.withName, fileName: file.fileName, mimeType: file.mimeType)
             }
+            
+            multiPart.
             
         }, with: urlRequest)
             .uploadProgress(queue: uploadProgressQueue) { progress in
