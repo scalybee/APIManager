@@ -267,7 +267,6 @@ extension AFAPIManager{
                 multiPart.append(file.fileURL, withName: file.withName, fileName: file.fileName, mimeType: file.mimeType)
             }
             
-            multiPart.
             
         }, with: urlRequest)
             .uploadProgress(queue: uploadProgressQueue) { progress in
