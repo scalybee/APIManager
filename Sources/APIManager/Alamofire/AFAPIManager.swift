@@ -214,16 +214,20 @@ extension AFAPIManager{
         
         sessionManager.upload(multipartFormData: { multiPart in
             param?.forEach({ (paramKey, paramValue) in
+                // If Json String is used at backend please uncomment following thing
+                //                if let temp = value as? NSArray {
+                //                    if let jsonData = try? JSONSerialization.data(withJSONObject: temp, options:[]) {
+                //                        multiPart.append(jsonData, withName: key)
+                //                    }
+                //                }
                 if let arrayList = paramValue as? [[String: Any]] {
                     arrayList.enumerated().forEach { arrayIndex, arrayValue in
                         arrayValue.forEach { dictKey, dictValue in
                             if let temp = dictValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
                                 multiPart.append(tempData, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
-                                print("\(paramKey)[\(arrayIndex)][\(dictKey)] : \(temp)")
                             }
                             else if let tempData = "\(dictValue)".data(using: .utf8) {
                                 multiPart.append(tempData, withName: "\(paramKey)[\(arrayIndex)][\(dictKey)]" as String)
-                                print("\(paramKey)[\(arrayIndex)][\(dictKey)] : \(dictValue)")
                             }
                         }
                     }
@@ -232,36 +236,20 @@ extension AFAPIManager{
                     dataArrayList.enumerated().forEach { index, value in
                         if let temp = value as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
                             multiPart.append(tempData, withName: "\(paramKey)[\(index)]" as String)
-                            print("\(paramKey)[\(index)] : \(value)")
                         }
                         else if let dataValue = "\(value)".data(using: .utf8) {
                             multiPart.append(dataValue, withName: "\(paramKey)[\(index)]" as String)
-                            print("\(paramKey)[\(index)] : \(value)")
                         }
                     }
                 }
                 else if let temp = paramValue as? Bool, let tempData = "\(temp ? 1 : 0)".data(using: .utf8) {
                     multiPart.append(tempData, withName: paramKey)
-                    print("\(paramKey) : \(paramValue)")
                 }
                 else if let tempData = "\(paramValue)".data(using: .utf8) {
                     multiPart.append(tempData, withName: paramKey)
-                    print("\(paramKey) : \(paramValue)")
                 }
             })
             
-//                if let temp = value as? NSArray {
-//                    if let jsonData = try? JSONSerialization.data(withJSONObject: temp, options:[]) {
-//                        multiPart.append(jsonData, withName: key)
-//                    }
-//                }
-//                else if let temp = value as? Bool {
-//                    multiPart.append("\(temp ? 1 : 0)".data(using: .utf8)!, withName: key)
-//                }
-//                else {
-//                    multiPart.append("\(value)".data(using: .utf8)!, withName: key)
-//                }
-//            })
             
             files.forEach { file in
                 multiPart.append(file.fileURL, withName: file.withName, fileName: file.fileName, mimeType: file.mimeType)
