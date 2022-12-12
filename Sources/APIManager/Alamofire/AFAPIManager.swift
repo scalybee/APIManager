@@ -81,6 +81,11 @@ extension AFAPIManager{
     
     func requestDecodable<T>(_ url: String, decodeWith: T.Type, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
         
+        guard NetworkReachabilityManager()?.isReachable == false else {
+            completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
+            return
+        }
+        
         var headers = HTTPHeaders()
         
         header?.forEach({ headerValue in
@@ -117,10 +122,10 @@ extension AFAPIManager{
                 switch res.result {
                     
                 case .success(let decoded):
-                    completion(statuscode, .success(decoded))
+                    completion(res.response?.statusCode ?? 200, .success(decoded))
                     
                 case .failure(let error):
-                    if (error as NSError).code == APIManagerError.internetOffline.statusCode {
+                    if (error as NSError).code == APIManagerError.internetOffline.statusCode || NetworkReachabilityManager()?.isReachable == false {
                         completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
                     }
                     else {
@@ -134,6 +139,11 @@ extension AFAPIManager{
     }
     
     func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+        
+        guard NetworkReachabilityManager()?.isReachable == false else {
+            completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
+            return
+        }
         
         var headers = HTTPHeaders()
         
@@ -174,7 +184,7 @@ extension AFAPIManager{
                     completion(res.response?.statusCode ?? 200,.success(value))
                     
                 case .failure(let error):
-                    if (error as NSError).code == APIManagerError.internetOffline.statusCode {
+                    if (error as NSError).code == APIManagerError.internetOffline.statusCode || NetworkReachabilityManager()?.isReachable == false {
                         completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
                     }
                     else {
@@ -188,6 +198,11 @@ extension AFAPIManager{
     }
     
     func upload(_ url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
+        
+        guard NetworkReachabilityManager()?.isReachable == false else {
+            completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
+            return
+        }
         
         var hTTPHeaders = HTTPHeaders()
         
@@ -283,7 +298,7 @@ extension AFAPIManager{
                     completion(res.response?.statusCode ?? 200,.success(value))
                     
                 case .failure(let error):
-                    if (error as NSError).code == APIManagerError.internetOffline.statusCode {
+                    if (error as NSError).code == APIManagerError.internetOffline.statusCode || NetworkReachabilityManager()?.isReachable == false {
                         completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
                     }
                     else {
