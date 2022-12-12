@@ -81,7 +81,7 @@ extension AFAPIManager{
     
     func requestDecodable<T>(_ url: String, decodeWith: T.Type, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int, Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
         
-        guard NetworkReachabilityManager()?.isReachable == false else {
+        guard NetworkReachabilityManager()?.isReachable == true else {
             completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
             return
         }
@@ -140,7 +140,7 @@ extension AFAPIManager{
     
     func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
-        guard NetworkReachabilityManager()?.isReachable == false else {
+        guard NetworkReachabilityManager()?.isReachable == true else {
             completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
             return
         }
@@ -199,7 +199,7 @@ extension AFAPIManager{
     
     func upload(_ url: String, httpMethod: APIHTTPMethod = .POST, header: [String : String]?, param: [String : Any]?, files: [APIFileModel], requestTimeout: TimeInterval, uploadProgressQueue: DispatchQueue, uploadProgress: @escaping(Double)->Void , completion: @escaping (Int,Result<Data, Error>) -> Void) throws {
         
-        guard NetworkReachabilityManager()?.isReachable == false else {
+        guard NetworkReachabilityManager()?.isReachable == true else {
             completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
             return
         }
