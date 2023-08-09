@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Alamofire
 
 //MARK: APIManager Class
 public class APIManager: NSObject, APIManagerProtocol {
@@ -33,7 +32,7 @@ public class APIManager: NSObject, APIManagerProtocol {
 //MARK: request with codable support
 extension APIManager {
     
-    public func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, encoding: ParameterEncoding = JSONEncoding.default, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
+    public func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -42,7 +41,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url, httpMethod: httpMethod, header: header, param: param, encoding: encoding,requestTimeout: requestTimeout, completion: completion)
+        manager.requestData(url, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
         
     }
     

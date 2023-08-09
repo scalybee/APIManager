@@ -138,7 +138,7 @@ extension AFAPIManager{
         
     }
     
-    func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, encoding: ParameterEncoding = URLEncoding.default, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
+    func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]?, param: [String : Any]?, requestTimeout: TimeInterval, completion: @escaping (Int,Result<Data, Error>) -> Void) {
         
         guard NetworkReachabilityManager()?.isReachable == true else {
             completion(APIManagerError.internetOffline.statusCode,.failure(APIManagerError.internetOffline))
@@ -162,7 +162,7 @@ extension AFAPIManager{
             Debug.log("=============================\n")
         }
         
-        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: encoding, headers: headers)
+        sessionManager.request(url, method: HTTPMethod(rawValue: httpMethod.rawValue), parameters: param, encoding: defaultEncoding, headers: headers)
             .responseData { res in
                 
                 let statuscode = res.response?.statusCode ?? APIManagerError.sessionExpired.statusCode
