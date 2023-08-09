@@ -23,7 +23,7 @@ public class APIManager: NSObject, APIManagerProtocol {
     ///   - statusCodeCallBack: when manager encounter code mentioned in `statusCodeForCallBack`, manager will trigger this callback to handle specific case instead of normal flow, e.g. we need to handle token expiry condition in our app we will use this call back, normal flow is broken as we do not want to show error message. call back will give message based on key provided in `statusMessageKey` param.
     ///   - sslPinningType: this is ssl pinning type
     ///   - isDebugOn: using this you can toggle debug api request print.
-    public init(sslPinningType : SSLPinningType = .disable, encoding : ParameterEncoding = JSONEncoding.default, isDebugOn : Bool = false) {
+    public init(sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
         manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
     }
@@ -33,7 +33,7 @@ public class APIManager: NSObject, APIManagerProtocol {
 //MARK: request with codable support
 extension APIManager {
     
-    public func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
+    public func requestData(_ url: String, httpMethod: APIHTTPMethod, header: [String : String]? = nil, param: [String : Any]? = nil, encoding: ParameterEncoding = JSONEncoding.default, requestTimeout: TimeInterval = 60, completion: @escaping (Int, Result<Data, Error>) -> Void) {
         
         guard Reachability.isConnectedToNetwork() == true else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -42,7 +42,7 @@ extension APIManager {
             return
         }
         
-        manager.requestData(url, httpMethod: httpMethod, header: header, param: param, requestTimeout: requestTimeout, completion: completion)
+        manager.requestData(url, httpMethod: httpMethod, header: header, param: param, encoding: encoding,requestTimeout: requestTimeout, completion: completion)
         
     }
     
