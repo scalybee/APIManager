@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Alamofire
 
 //MARK: APIManager Class
 public class APIManager: NSObject, APIManagerProtocol {
@@ -22,7 +23,7 @@ public class APIManager: NSObject, APIManagerProtocol {
     ///   - statusCodeCallBack: when manager encounter code mentioned in `statusCodeForCallBack`, manager will trigger this callback to handle specific case instead of normal flow, e.g. we need to handle token expiry condition in our app we will use this call back, normal flow is broken as we do not want to show error message. call back will give message based on key provided in `statusMessageKey` param.
     ///   - sslPinningType: this is ssl pinning type
     ///   - isDebugOn: using this you can toggle debug api request print.
-    public init(sslPinningType : SSLPinningType = .disable, isDebugOn : Bool = false) {
+    public init(sslPinningType : SSLPinningType = .disable, encoding : ParameterEncoding = JSONEncoding.default, isDebugOn : Bool = false) {
         self.sslPinningType = sslPinningType
         manager = AFAPIManager(sslPinningType: sslPinningType, isDebugOn: isDebugOn)
     }
